@@ -6,7 +6,7 @@ const fs = require('fs');
 const Solution = require('./solution');
 const { puzzleDir } = require('./paths');
 
-function run(selectedDay) {
+async function run(selectedDay) {
     const files = fs.readdirSync(puzzleDir);
 
     // Write available files to console
@@ -29,7 +29,7 @@ function run(selectedDay) {
     // Run solution
     /** @type { Solution } */
     const solution = new SolutionImplementation();
-    solution.init();
+    await solution.init();
     debug(`Part 1: ${solution.part1()}`);
     debug(`Part 2: ${solution.part2()}`);
 }

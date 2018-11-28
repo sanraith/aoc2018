@@ -1,5 +1,5 @@
 const debug = require('debug')('aoc.fw.solution');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const chalk = require('chalk').default;
 const { inputDir } = require('./paths');
@@ -29,13 +29,15 @@ class Solution {
         return this._input;
     }
 
-    init() {
+    async init() {
         const dayStr = this.day.toString().padStart(2, '0');
         const inputPath = path.join(inputDir, `day${dayStr}.txt`);
-        if (fs.existsSync(inputPath)) {
-            this._input = fs.readFileSync(inputPath).toString('utf-8');
-        } else {
-            debug(chalk.red(`Input not found for day ${this.day}! ${inputPath}`));
+        try {
+            const buffer = await fs.readFile(inputPath, { encoding: 'utf-8' });
+            this._input = buffer.toString('utf-8');
+        } catch (err) {
+            debug(chalk.red(err));
+            debug(chalk.redBright(`Input could not be loaded for Day ${this.day}!`));
         }
     }
 
