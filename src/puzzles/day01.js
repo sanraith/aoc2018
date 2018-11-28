@@ -4,7 +4,7 @@ const Solution = require('../fw/solution');
 
 class Day01 extends Solution {
     constructor() {
-        super('Test day 1 name');
+        super(1, 'Test day 1 name');
     }
 
     part1() {
