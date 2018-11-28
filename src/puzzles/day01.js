@@ -8,7 +8,11 @@ class Day01 extends Solution {
     }
 
     part1() {
-        return `${this.name} test result.`;
+        return `${this.name} test 1 result.`;
+    }
+
+    part2() {
+        return `${this.name} test 2 result.`;
     }
 }
 

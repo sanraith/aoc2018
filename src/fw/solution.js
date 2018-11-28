@@ -1,5 +1,5 @@
 const debug = require('debug')('aoc.fw.solution');
-const fs = require('fs').promises;
+const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk').default;
 const { inputDir } = require('./paths');

@@ -22,6 +22,7 @@
     "chalk": "^2.4.1",
     "clui": "^0.3.6",
     "debug": "^4.1.0",
+    "fs-extra": "^7.0.1",
     "nodemon": "^1.18.7"
   },
   "devDependencies": {

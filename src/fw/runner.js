@@ -1,13 +1,13 @@
 const debug = require('debug')('aoc.fw.runner');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 // eslint-disable-next-line no-unused-vars
 const Solution = require('./solution');
 const { puzzleDir } = require('./paths');
 
 async function run(selectedDay) {
-    const files = fs.readdirSync(puzzleDir);
+    const files = await fs.readdir(puzzleDir);
 
     // Write available files to console
     debug(`Files in ${puzzleDir}:`);
