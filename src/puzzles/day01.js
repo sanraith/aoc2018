@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const debug = require('debug')('app.puzzles.day01');
+const debug = require('debug')('aoc.puzzles.day01');
 const Solution = require('../fw/solution');
 
 class Day01 extends Solution {
