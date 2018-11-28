@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const debug = require('debug')('aoc');
 
-debug('Hello World!');
+require('./src/fw/runner');
