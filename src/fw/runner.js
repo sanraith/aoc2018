@@ -16,8 +16,8 @@ async function run(selectedDay) {
     // Import solution class from the last file
     let selectedFile = files.slice(-1)[0];
     if (Number.isInteger(parseInt(selectedDay, 10))) {
-        const regex = /day(?:([0-9]{2}))\.js/;
-        const tempFile = files.filter(f => parseInt(regex.exec(f)[1], 10) === selectedDay)[0];
+        const solutionFileRegex = /day(?:([0-9]{2}))\.js/;
+        const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDay)[0];
         selectedFile = tempFile !== undefined ? tempFile : selectedFile;
     }
 

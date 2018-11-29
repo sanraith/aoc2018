@@ -15,40 +15,33 @@ class Solution {
     }
 
     /** @type { String } */
-    get name() {
-        return this._name;
-    }
+    get name() { return this._name; }
 
     /** @type { Number } */
-    get day() {
-        return this._day;
-    }
+    get day() { return this._day; }
 
-    /** @type { String } */
-    get input() {
-        return this._input;
-    }
+    /** @type { Array<String> } */
+    get input() { return this._input; }
 
     async init() {
         const dayStr = this.day.toString().padStart(2, '0');
         const inputPath = path.join(inputDir, `day${dayStr}.txt`);
         try {
             const buffer = await fs.readFile(inputPath, { encoding: 'utf-8' });
-            this._input = buffer.toString('utf-8');
+            const newLineRegex = /\r\n?|\n/g;
+            this._input = buffer.toString('utf-8').split(newLineRegex);
         } catch (err) {
             debug(chalk.red(err));
             debug(chalk.redBright(`Input could not be loaded for Day ${this.day}!`));
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part1() {
-        return 'Not implemented.';
+        return `Day ${this.day} part 1 not implemented.`;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part2() {
-        return 'Not implemented.';
+        return `Day ${this.day} part 2 not implemented.`;
     }
 }
 
