@@ -1,12 +1,15 @@
+/* eslint-disable no-console */
 const debug = require('debug')('aoc.fw.runner');
 const path = require('path');
 const fs = require('fs-extra');
-
-// eslint-disable-next-line no-unused-vars
-const Solution = require('./solution');
+const clui = require('clui');
+const Stopwatch = require('statman-stopwatch');
+const { fork } = require('child_process');
 const { puzzleDir } = require('./paths');
 
-async function run(selectedDay) {
+const { Spinner } = clui;
+
+async function getSolutionFileAsync(selectedDay) {
     const files = await fs.readdir(puzzleDir);
 
     // Write available files to console
@@ -20,20 +23,54 @@ async function run(selectedDay) {
         const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDay)[0];
         selectedFile = tempFile !== undefined ? tempFile : selectedFile;
     }
-
-    debug(`Selected: ${selectedFile}`);
+    debug(`Selected: ${selectedFile} for ${selectedDay}`);
     const fileToImport = path.join(puzzleDir, selectedFile);
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const SolutionDayXX = require(fileToImport);
 
-    // Run solution
-    /** @type { Solution } */
-    const solution = new SolutionDayXX();
-    await solution.init();
-    debug(`Part 1: ${solution.part1()}`);
-    debug(`Part 2: ${solution.part2()}`);
+    return fileToImport;
+}
+
+function msToTime(duration) {
+    const milliseconds = parseInt((duration % 1000), 10);
+    let seconds = parseInt((duration / 1000) % 60, 10);
+    let minutes = parseInt((duration / (1000 * 60)) % 60, 10);
+    let hours = parseInt((duration / (1000 * 60 * 60)) % 24, 10);
+
+    hours = (hours < 10) ? `0${hours}` : hours;
+    minutes = (minutes < 10) ? `0${minutes}` : minutes;
+    seconds = (seconds < 10) ? `0${seconds}` : seconds;
+
+    return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+async function runAsync(selectedDay) {
+    const stopwatch = new Stopwatch(true);
+    const countdown = new Spinner('Thinking...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
+    let countDownIntervalId = -1;
+    const fileToImport = await getSolutionFileAsync(selectedDay);
+
+    const child = fork(path.resolve(__dirname, 'runner_child.js'));
+    child.on('message', msg => {
+        if (msg.result !== undefined) {
+            countdown.stop();
+            // TODO replace with more sophisticated UI.
+            console.log(`Part ${msg.part}: ${msg.result}`);
+            countdown.start();
+        }
+    }).on('close', () => {
+        clearInterval(countDownIntervalId);
+        countdown.stop();
+        const elapsed = stopwatch.stop();
+        console.log(`Elapsed: ${msToTime(elapsed)}`);
+    });
+    countDownIntervalId = setInterval(() => {
+        countdown.message(`Thinking... ${msToTime(stopwatch.read())}`);
+    }, 100);
+
+    console.log(`Executing ${fileToImport}...`);
+    countdown.start();
+    child.send({ solutionPath: fileToImport });
 }
 
 module.exports = {
-    run
+    runAsync
 };

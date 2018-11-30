@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 
 process.stdout.write('\x1Bc'); // Clear console
 if (args.length > 0) {
-    runner.run(args[0]);
+    runner.runAsync(args[0]);
 } else {
-    runner.run();
+    runner.runAsync();
 }

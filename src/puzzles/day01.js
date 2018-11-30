@@ -7,12 +7,14 @@ class Day01 extends Solution {
         super(1, 'Test day 1 name');
     }
 
+    // eslint-disable-next-line class-methods-use-this
     part1() {
-        return this.input;
+        return undefined;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     part2() {
-        return `${this.name} test 2 result.`;
+        return undefined;
     }
 }
 

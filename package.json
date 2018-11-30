@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "set DEBUG=aoc* && nodemon",
+    "start": "node app.js",
+    "debug": "set DEBUG=aoc* && nodemon",
     "lint": "eslint app.js src"
   },
   "repository": {
@@ -23,7 +24,8 @@
     "clui": "^0.3.6",
     "debug": "^4.1.0",
     "fs-extra": "^7.0.1",
-    "nodemon": "^1.18.7"
+    "nodemon": "^1.18.7",
+    "statman-stopwatch": "^2.7.0"
   },
   "devDependencies": {
     "eslint": "^5.9.0",

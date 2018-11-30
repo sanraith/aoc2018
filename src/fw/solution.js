@@ -36,12 +36,14 @@ class Solution {
         }
     }
 
+    // eslint-disable-next-line class-methods-use-this
     part1() {
-        return `Day ${this.day} part 1 not implemented.`;
+        return undefined;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     part2() {
-        return `Day ${this.day} part 2 not implemented.`;
+        return undefined;
     }
 }
 
