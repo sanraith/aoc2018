@@ -3,10 +3,10 @@ const debug = require('debug')('aoc.fw.runner_child');
 // eslint-disable-next-line no-unused-vars
 const Solution = require('./solution');
 
-const isDebugMode = process.env.DEBUG !== undefined;
+const isSlowMode = process.env.SLOW !== undefined;
 
-function syncWait() {
-    for (let i = 0; i < 1000000000; i += 1);
+function asyncWait(timeout) {
+    return new Promise(resolve => setTimeout(() => resolve, timeout ? 2500 : timeout));
 }
 
 async function runSolution(solutionPath) {
@@ -19,12 +19,12 @@ async function runSolution(solutionPath) {
     process.send({ type: 'info', day: solution.day, title: solution.title });
     await solution.init();
 
-    if (isDebugMode) { syncWait(); }
     const part1 = solution.part1();
+    if (isSlowMode) { await asyncWait(); }
     process.send({ part: 1, result: part1 });
 
-    if (isDebugMode) { syncWait(); }
     const part2 = solution.part2();
+    if (isSlowMode && part1 !== undefined) { await asyncWait(); }
     process.send({ part: 2, result: part2 });
 
     process.exit();

@@ -44,7 +44,8 @@ async function getSolutionFilesAsync(selectedDay) {
     // Select the file based on the day.
     if (Number.isInteger(selectedDayNumber)) {
         const solutionFileRegex = /day(?:([0-9]{2}))\.js/;
-        [selectedFile] = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDayNumber);
+        const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDayNumber)[0];
+        selectedFile = tempFile === undefined ? selectedFile : tempFile;
     }
 
     let selectedFiles = [selectedFile];
@@ -97,7 +98,7 @@ async function runAsync(selectedDay) {
 
     clearInterval(countDownIntervalId);
     const elapsed = stopwatch.stop();
-    console.log(`Elapsed: ${msToTime(elapsed)}`);
+    console.log(`Done. Elapsed: ${msToTime(elapsed)}`);
 }
 
 module.exports = {
