@@ -6,12 +6,7 @@ class Day01 extends Solution {
     constructor() { super(1, 'Chronal Calibration'); }
 
     part1() {
-        let sum = 0;
-        this.input.forEach(x => {
-            sum += parseInt(x, 10);
-        });
-
-        return sum;
+        return this.input.reduce((sum, x) => sum + parseInt(x, 10), 0);
     }
 
     part2() {
