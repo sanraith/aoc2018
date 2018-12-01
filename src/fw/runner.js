@@ -10,20 +10,21 @@ const { puzzleDir } = require('./paths');
 const { Spinner } = clui;
 
 async function getSolutionFileAsync(selectedDay) {
-    const files = await fs.readdir(puzzleDir);
+    const selectedDayNumber = parseInt(selectedDay, 10);
 
     // Write available files to console
+    const files = await fs.readdir(puzzleDir);
     debug(`Files in ${puzzleDir}:`);
     files.forEach(fileName => debug(`- ${fileName}`));
 
     // Import solution class from the last file
     let selectedFile = files.slice(-1)[0];
-    if (Number.isInteger(parseInt(selectedDay, 10))) {
+    if (Number.isInteger(selectedDayNumber)) {
         const solutionFileRegex = /day(?:([0-9]{2}))\.js/;
-        const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDay)[0];
+        const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDayNumber)[0];
         selectedFile = tempFile !== undefined ? tempFile : selectedFile;
     }
-    debug(`Selected: ${selectedFile} for ${selectedDay}`);
+    debug(`Selected: ${selectedFile} for ${selectedDayNumber}`);
     const fileToImport = path.join(puzzleDir, selectedFile);
 
     return fileToImport;

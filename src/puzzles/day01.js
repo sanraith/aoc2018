@@ -3,9 +3,7 @@ const debug = require('debug')('aoc.puzzles.day01');
 const Solution = require('../fw/solution');
 
 class Day01 extends Solution {
-    constructor() {
-        super(1, 'Chronal Calibration');
-    }
+    constructor() { super(1, 'Chronal Calibration'); }
 
     part1() {
         let sum = 0;
@@ -17,20 +15,21 @@ class Day01 extends Solution {
     }
 
     part2() {
-        const freqs = new Set([]);
+        const changes = this.input.map(x => parseInt(x, 10));
+        const freqs = new Set();
         let duplicate;
         let sum = 0;
 
-        do {
-            for (let i = 0; i < this.input.length; i += 1) {
-                sum += parseInt(this.input[i], 10);
+        while (duplicate === undefined) {
+            for (const change of changes) {
+                sum += change;
                 if (freqs.has(sum)) {
                     duplicate = sum;
                     break;
                 }
                 freqs.add(sum);
             }
-        } while (duplicate === undefined);
+        }
 
         return duplicate;
     }
