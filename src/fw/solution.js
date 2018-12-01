@@ -7,11 +7,12 @@ const { inputDir } = require('./paths');
 class Solution {
     /**
      * @param { Number } day The number of the day.
-     * @param { String } name The name of the puzzle.
+     * @param { String } title The title of the puzzle.
      */
-    constructor(day, name) {
+    constructor(day, title) {
         this._day = day;
-        this._title = name;
+        this._title = title;
+        this._onProgressChanged = undefined;
     }
 
     /** @type { String } */
@@ -23,7 +24,8 @@ class Solution {
     /** @type { Array<String> } */
     get input() { return this._input; }
 
-    async init() {
+    async init(onProgressChanged) {
+        this._onProgressChanged = onProgressChanged;
         const dayStr = this.day.toString().padStart(2, '0');
         const inputPath = path.join(inputDir, `day${dayStr}.txt`);
         try {
@@ -44,6 +46,19 @@ class Solution {
     // eslint-disable-next-line class-methods-use-this
     part2() {
         return undefined;
+    }
+
+    /**
+     * Announce the current progress.
+     * @param { Number } current The current value;
+     * @param { Number } max The max value. default = 100.
+     * @param { Number } min The min value. default = 0.
+     */
+    progress(current, max = 100, min = 0) {
+        const d = 100 / (max - min);
+        // eslint-disable-next-line no-param-reassign
+        current = (current - min) * d;
+        this._onProgressChanged(current);
     }
 }
 

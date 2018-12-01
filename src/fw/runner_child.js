@@ -12,17 +12,26 @@ function asyncWait(timeout) {
 async function runSolution(solutionPath) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const SolutionDayXX = require(solutionPath);
-
-    // Run solution
     /** @type { Solution } */
     const solution = new SolutionDayXX();
     process.send({ type: 'info', day: solution.day, title: solution.title });
-    await solution.init();
 
+    let lastProgress;
+    await solution.init(progress => {
+        // eslint-disable-next-line prefer-destructuring
+        const now = Date.now();
+        if (lastProgress === undefined || now - lastProgress >= 100) {
+            lastProgress = now;
+            process.send({ type: 'progress', value: progress });
+        }
+    });
+
+    lastProgress = undefined;
     const part1 = solution.part1();
     if (isSlowMode) { await asyncWait(); }
     process.send({ part: 1, result: part1 });
 
+    lastProgress = undefined;
     const part2 = solution.part2();
     if (isSlowMode && part1 !== undefined) { await asyncWait(); }
     process.send({ part: 2, result: part2 });

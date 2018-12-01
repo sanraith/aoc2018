@@ -59,7 +59,19 @@ async function getSolutionFilesAsync(selectedDay) {
     return selectedFiles;
 }
 
-async function runChildAsync(fileToImport, countdown) {
+async function runChildAsync(fileToImport, stopwatch) {
+    const countdown = new Spinner('Thinking...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
+    let progress;
+
+    const countDownIntervalId = setInterval(() => {
+        if (progress) {
+            const progressStr = (parseInt(progress * 100, 10) / 100).toFixed(2).toString().padStart(6, ' ');
+            countdown.message(`Thinking... ${msToTime(stopwatch.read())} ${progressStr}%`);
+        } else {
+            countdown.message(`Thinking... ${msToTime(stopwatch.read())}`);
+        }
+    }, 100);
+
     const child = fork(path.resolve(__dirname, 'runner_child.js'));
     let childClosedPromiseResolver;
     // eslint-disable-next-line no-return-assign
@@ -69,10 +81,14 @@ async function runChildAsync(fileToImport, countdown) {
         if (msg.type === 'info') {
             console.log(`Day ${msg.day} - ${msg.title}`);
             countdown.start();
+        } else if (msg.type === 'progress') {
+            // console.log(msg.value);
+            progress = msg.value;
         } else if (msg.result !== undefined) {
             countdown.stop();
             // TODO replace with more sophisticated UI.
             console.log(`Part ${msg.part}: ${msg.result}`);
+            progress = undefined;
             countdown.start();
         }
     }).on('close', () => {
@@ -82,21 +98,17 @@ async function runChildAsync(fileToImport, countdown) {
     child.send({ solutionPath: fileToImport });
 
     await childClosedPromise;
+    clearInterval(countDownIntervalId);
 }
 
 async function runAsync(selectedDay) {
     const filesToRun = await getSolutionFilesAsync(selectedDay);
     const stopwatch = new Stopwatch(true);
-    const countdown = new Spinner('Thinking...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
-    const countDownIntervalId = setInterval(() => {
-        countdown.message(`Thinking... ${msToTime(stopwatch.read())}`);
-    }, 100);
 
     for (const fileToRun of filesToRun) {
-        await runChildAsync(fileToRun, countdown);
+        await runChildAsync(fileToRun, stopwatch);
     }
 
-    clearInterval(countDownIntervalId);
     const elapsed = stopwatch.stop();
     console.log(`Done. Elapsed: ${msToTime(elapsed)}`);
 }
