@@ -4,17 +4,35 @@ const Solution = require('../fw/solution');
 
 class Day01 extends Solution {
     constructor() {
-        super(1, 'Test day 1 name');
+        super(1, 'Chronal Calibration');
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part1() {
-        return undefined;
+        let sum = 0;
+        this.input.forEach(x => {
+            sum += parseInt(x, 10);
+        });
+
+        return sum;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part2() {
-        return undefined;
+        const freqs = new Set([]);
+        let duplicate;
+        let sum = 0;
+
+        do {
+            for (let i = 0; i < this.input.length; i += 1) {
+                sum += parseInt(this.input[i], 10);
+                if (freqs.has(sum)) {
+                    duplicate = sum;
+                    break;
+                }
+                freqs.add(sum);
+            }
+        } while (duplicate === undefined);
+
+        return duplicate;
     }
 }
 
