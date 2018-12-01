@@ -9,5 +9,6 @@ module.exports = {
         "comma-dangle": ["error", "only-multiline"],
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
         "no-restricted-syntax": "off",
+        "no-plusplus": "off",
     }
 };

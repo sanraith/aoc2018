@@ -13,16 +13,16 @@ class Day01 extends Solution {
         const changes = this.input.map(x => parseInt(x, 10));
         const freqs = new Set();
         let duplicate;
-        let sum = 0;
+        let freq = 0;
 
         while (duplicate === undefined) {
             for (const change of changes) {
-                sum += change;
-                if (freqs.has(sum)) {
-                    duplicate = sum;
+                freq += change;
+                if (freqs.has(freq)) {
+                    duplicate = freq;
                     break;
                 }
-                freqs.add(sum);
+                freqs.add(freq);
             }
         }
 

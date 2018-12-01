@@ -2,12 +2,10 @@
 const debug = require('debug')('aoc.fw.runner');
 const path = require('path');
 const fs = require('fs-extra');
-const clui = require('clui');
+const { Spinner } = require('clui');
 const Stopwatch = require('statman-stopwatch');
 const { fork } = require('child_process');
 const { puzzleDir } = require('./paths');
-
-const { Spinner } = clui;
 
 async function getSolutionFileAsync(selectedDay) {
     const selectedDayNumber = parseInt(selectedDay, 10);
@@ -51,7 +49,10 @@ async function runAsync(selectedDay) {
 
     const child = fork(path.resolve(__dirname, 'runner_child.js'));
     child.on('message', msg => {
-        if (msg.result !== undefined) {
+        if (msg.type === 'info') {
+            console.log(`Day ${msg.day} - ${msg.title}`);
+            countdown.start();
+        } else if (msg.result !== undefined) {
             countdown.stop();
             // TODO replace with more sophisticated UI.
             console.log(`Part ${msg.part}: ${msg.result}`);
@@ -67,8 +68,6 @@ async function runAsync(selectedDay) {
         countdown.message(`Thinking... ${msToTime(stopwatch.read())}`);
     }, 100);
 
-    console.log(`Executing ${fileToImport}...`);
-    countdown.start();
     child.send({ solutionPath: fileToImport });
 }
 

@@ -3,7 +3,7 @@ const debug = require('debug')('aoc.fw.runner_child');
 // eslint-disable-next-line no-unused-vars
 const Solution = require('./solution');
 
-const isDebugMode = false && process.env.DEBUG !== undefined;
+const isDebugMode = process.env.DEBUG !== undefined;
 
 function syncWait() {
     for (let i = 0; i < 1000000000; i += 1);
@@ -16,6 +16,7 @@ async function runSolution(solutionPath) {
     // Run solution
     /** @type { Solution } */
     const solution = new SolutionDayXX();
+    process.send({ type: 'info', day: solution.day, title: solution.title });
     await solution.init();
 
     if (isDebugMode) { syncWait(); }

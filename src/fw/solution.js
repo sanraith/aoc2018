@@ -11,11 +11,11 @@ class Solution {
      */
     constructor(day, name) {
         this._day = day;
-        this._name = name;
+        this._title = name;
     }
 
     /** @type { String } */
-    get name() { return this._name; }
+    get title() { return this._title; }
 
     /** @type { Number } */
     get day() { return this._day; }
