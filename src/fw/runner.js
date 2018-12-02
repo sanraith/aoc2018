@@ -32,8 +32,6 @@ async function getSolutionFilesAsync(selectedDay) {
 
     // Write available files to console
     const files = await fs.readdir(puzzleDir);
-    debug(`Files in ${puzzleDir}:`);
-    files.forEach(fileName => debug(`- ${fileName}`));
 
     let selectedFile;
     // If a day is selected, fall back to last file.

@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 const debug = require('debug')('aoc.fw.runner_child');
+const chalk = require('chalk').default;
 // eslint-disable-next-line no-unused-vars
 const Solution = require('./solution');
 
@@ -7,6 +7,16 @@ const isSlowMode = process.env.SLOW !== undefined;
 
 function asyncWait(timeout) {
     return new Promise(resolve => setTimeout(() => resolve, timeout ? 2500 : timeout));
+}
+
+async function wrapSolutionAsync(partNumber, func) {
+    try {
+        const result = func();
+        if (isSlowMode) { await asyncWait(); }
+        process.send({ part: partNumber, result });
+    } catch (err) {
+        debug(chalk.bgRedBright(`Error in part ${partNumber}: ${err}`));
+    }
 }
 
 async function runSolution(solutionPath) {
@@ -26,15 +36,9 @@ async function runSolution(solutionPath) {
         }
     });
 
+    await wrapSolutionAsync(1, () => solution.part1());
     lastProgress = undefined;
-    const part1 = solution.part1();
-    if (isSlowMode) { await asyncWait(); }
-    process.send({ part: 1, result: part1 });
-
-    lastProgress = undefined;
-    const part2 = solution.part2();
-    if (isSlowMode && part1 !== undefined) { await asyncWait(); }
-    process.send({ part: 2, result: part2 });
+    await wrapSolutionAsync(2, () => solution.part2());
 
     process.exit();
 }

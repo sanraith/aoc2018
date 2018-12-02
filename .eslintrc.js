@@ -10,6 +10,8 @@ module.exports = {
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
         "no-restricted-syntax": "off",
         "no-plusplus": "off",
+        "class-methods-use-this": "off",
+        "prefer-destructuring" : "off",
         "no-return-assign": ["error", "except-parens"],
     }
 };
