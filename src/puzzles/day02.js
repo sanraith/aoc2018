@@ -10,7 +10,7 @@ class Day02 extends Solution {
 
         for (const label of this.input) {
             const values = Array.from(new Set(label))
-                .map(k => label.split('').reduce((count, ch) => count + (ch === k), 0));
+                .map(k => [...label].reduce((count, ch) => count + (ch === k), 0));
 
             results.twos += values.some(v => v === 2) ? 1 : 0;
             results.threes += values.some(v => v === 3) ? 1 : 0;
