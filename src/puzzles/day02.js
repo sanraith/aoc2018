@@ -6,39 +6,29 @@ class Day02 extends Solution {
     constructor() { super(2, 'Inventory Management System'); }
 
     part1() {
-        const results = {
-            twos: 0,
-            threes: 0
-        };
+        const results = { twos: 0, threes: 0 };
 
-        this.input.forEach(label => {
+        for (const label of this.input) {
             const map = new Map();
             for (const c of label) {
-                if (!map.has(c)) {
-                    map.set(c, 0);
-                }
+                if (!map.has(c)) { map.set(c, 0); }
                 map.set(c, map.get(c) + 1);
             }
-            let two = 0; let three = 0;
-            for (const [, entry] of map) {
-                if (entry === 2) {
-                    two = 1;
-                } else if (entry === 3) {
-                    three = 1;
-                }
-            }
-            results.twos += two;
-            results.threes += three;
-        });
+
+            const values = Array.from(map.values());
+            results.twos += values.some(v => v === 2) ? 1 : 0;
+            results.threes += values.some(v => v === 3) ? 1 : 0;
+        }
+
         return results.twos * results.threes;
     }
 
     part2() {
-        const { length } = this.input;
+        const count = this.input.length;
         let current = [];
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < count; i++) {
             const a = this.input[i];
-            for (let j = i + 1; j < length; j++) {
+            for (let j = i + 1; j < count; j++) {
                 const b = this.input[j];
                 current = this.diff(a, b, current);
             }
