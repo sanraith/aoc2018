@@ -28,7 +28,6 @@ async function runSolution(solutionPath) {
 
     let lastProgress;
     await solution.init(progress => {
-        // eslint-disable-next-line prefer-destructuring
         const now = Date.now();
         if (lastProgress === undefined || now - lastProgress >= 100) {
             lastProgress = now;

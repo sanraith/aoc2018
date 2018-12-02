@@ -9,13 +9,9 @@ class Day02 extends Solution {
         const results = { twos: 0, threes: 0 };
 
         for (const label of this.input) {
-            const map = new Map();
-            for (const c of label) {
-                if (!map.has(c)) { map.set(c, 0); }
-                map.set(c, map.get(c) + 1);
-            }
+            const values = Array.from(new Set(label))
+                .map(k => label.split('').reduce((count, ch) => count + (ch === k), 0));
 
-            const values = Array.from(map.values());
             results.twos += values.some(v => v === 2) ? 1 : 0;
             results.threes += values.some(v => v === 3) ? 1 : 0;
         }
