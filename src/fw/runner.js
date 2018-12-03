@@ -85,7 +85,7 @@ async function runChildAsync(fileToImport, stopwatch) {
         } else if (msg.result !== undefined) {
             countdown.stop();
             // TODO replace with more sophisticated UI.
-            console.log(`Part ${msg.part}: ${msg.result}`);
+            console.log(` - Part ${msg.part}: ${msg.result}`);
             progress = undefined;
             countdown.start();
         }

@@ -15,6 +15,7 @@ async function wrapSolutionAsync(partNumber, func) {
         if (isSlowMode) { await asyncWait(); }
         process.send({ part: partNumber, result });
     } catch (err) {
+        debug(chalk.bgRedBright(`${err.stack}`));
         debug(chalk.bgRedBright(`Error in part ${partNumber}: ${err}`));
     }
 }
