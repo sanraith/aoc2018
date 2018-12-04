@@ -1,3 +1,5 @@
+/* eslint-disable no-continue */
+/* eslint-disable max-len */
 // eslint-disable-next-line no-unused-vars
 const debug = require('debug')('aoc.puzzles.day04');
 const Solution = require('../fw/solution');
@@ -6,36 +8,71 @@ class Day04 extends Solution {
     constructor() { super(4, 'Repose Record'); }
 
     part1() {
-        /** @type { Map<string, { id: string, sleepSum: number, records: Array<{id: String, date: Date, isAwake: Boolean}>> } */
-        const guards = this.getRecords().reduce((map, r) => {
-            if (!map.has(r.id)) { map.set(r.id, { id: r.id, records: [] }); }
-            map.get(r.id).records.push(r);
-            return map;
-        }, new Map());
-        debug(guards);
+        const guard = Array.from(this.getGuards().values()).reduce((acc, g) => (!acc || g.sleepSum > acc.sleepSum ? g : acc));
+        const timeSlot = guard.sleeps.reduce((acc, s) => (s.count > acc.count ? s : acc), guard.sleeps[0]);
+        const result = parseInt(guard.id, 10) * timeSlot.start.getMinutes();
+        debug(`Guard #${guard.id} Sum: ${guard.sleepSum} Time:${timeSlot.start.getMinutes()} Result: ${result}`);
 
-        for (const [id, guard] of guards) {
-            let sum = 0;
-            let lastDate = guard.records[0].date;
-            debug(id);
-            for (const record of guard.records) {
-                if (!record.isAwake) {
-                    const diff = (record.date - lastDate) / 60000; // ms => min
-                    sum += diff;
-                    debug(diff);
-                }
-                lastDate = record.date;
-            }
-            guard.sleepSum = sum;
-        }
-
-        const guard = Array.from(guards.values()).reduce((acc, x) => (x.sleepSum > acc.sleepSum ? x : acc),
-            guards.values().next().value);
-        return `${guard.id}: ${guard.sleepSum} - ${parseInt(guard.id, 10) * guard.sleepSum}`;
+        return result;
     }
 
     part2() {
+        let selected;
+        for (const guard of this.getGuards().values()) {
+            if (guard.sleeps.length === 0) { continue; }
+            guard.bestSleep = guard.sleeps.reduce((max, s) => (!max || s.count > max.count ? s : max));
 
+            if (!selected || guard.bestSleep.count > selected.bestSleep.count) {
+                selected = guard;
+            }
+        }
+
+        const result = parseInt(selected.id, 10) * selected.bestSleep.start.getMinutes();
+        debug(`Guard #${selected.id} Count: ${selected.bestSleep.count} Time: ${selected.bestSleep.start.getMinutes()} Result: ${result}`);
+
+        return result;
+    }
+
+    getGuards() {
+        /** @type { Map<string, { id: string, sleepSum: number, sleeps:Array<{start: Date, end: Date, durationMin: Number, count: Number}>, records: Array<{id: String, date: Date, isAwake: Boolean}>> } */
+        const guards = this.getRecords().reduce((map, r) => {
+            if (!map.has(r.id)) {
+                map.set(r.id, {
+                    id: r.id, sleepSum: 0, sleeps: [], records: []
+                });
+            }
+            map.get(r.id).records.push(r);
+            return map;
+        }, new Map());
+
+        for (const [, guard] of guards) {
+            let lastDate = guard.records[0].date;
+            for (const [index, record] of guard.records.entries()) {
+                const prevRecord = guard.records[index - 1];
+                if (index !== 0 && record.isAwake && !prevRecord.isAwake) {
+                    guard.sleepSum += (record.date - lastDate) / 60000; // ms => min
+                    guard.sleeps.push({
+                        start: this.normalizeDate(prevRecord.date),
+                        end: this.normalizeDate(record.date)
+                    });
+                }
+                lastDate = record.date;
+            }
+
+            for (const sleep of guard.sleeps) {
+                const d = sleep.start;
+                sleep.count = guard.sleeps.reduce((acc, x) => acc + (d >= x.start && d < x.end), 0);
+            }
+        }
+
+        return guards;
+    }
+
+    /**
+     * @param { Date } date
+     */
+    normalizeDate(date) {
+        return new Date(0, 0, 0, date.getHours(), date.getMinutes());
     }
 
     getRecords() {
@@ -48,7 +85,7 @@ class Day04 extends Solution {
             let isAwake = true;
             if (line.indexOf('Guard') !== -1) {
                 [, id] = /.*#([0-9]+)/.exec(line);
-            } else if (line.indexOf('asleep') === -1) {
+            } else if (line.indexOf('asleep') !== -1) {
                 isAwake = false;
             }
 
