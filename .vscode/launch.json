@@ -7,8 +7,44 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}\\app.js"
+            "protocol": "inspector",
+            "name": "Last puzzle",
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}\\app.js",
+            "args": [
+                "99"
+            ],
+            "env": {
+                "DEBUG": "aoc*",
+                "DEBUGGER" : "true"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "protocol": "inspector",
+            "name": "Selected puzzle",
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}\\app.js",
+            "args": [
+                "5", "2"
+            ],
+            "env": {
+                "DEBUG": "aoc*",
+                "DEBUGGER" : "true"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "protocol": "inspector",
+            "name": "All puzzles",
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}\\app.js",
+            "env": {
+                "DEBUG": "aoc*",
+                "DEBUGGER" : "true"
+            }
         }
     ]
 }

@@ -8,6 +8,8 @@ const Stopwatch = require('statman-stopwatch');
 const { fork } = require('child_process');
 const { puzzleDir } = require('./paths');
 
+const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
+
 function msToTime(duration) {
     let milliseconds = parseInt((duration % 1000), 10);
     let seconds = parseInt((duration / 1000) % 60, 10);
@@ -57,7 +59,7 @@ async function getSolutionFilesAsync(selectedDay) {
     return selectedFiles;
 }
 
-async function runChildAsync(fileToImport, stopwatch) {
+async function runChildAsync(fileToImport, parts, stopwatch) {
     const countdown = new Spinner('Thinking...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
     let progress;
 
@@ -70,7 +72,7 @@ async function runChildAsync(fileToImport, stopwatch) {
         }
     }, 100);
 
-    const child = fork(path.resolve(__dirname, 'runner_child.js'));
+    const child = fork(path.resolve(__dirname, 'runner_child.js'), debugParams);
     let childClosedPromiseResolver;
     // eslint-disable-next-line no-return-assign
     const childClosedPromise = new Promise(res => (childClosedPromiseResolver = res));
@@ -80,7 +82,6 @@ async function runChildAsync(fileToImport, stopwatch) {
             console.log(`Day ${msg.day} - ${msg.title}`);
             countdown.start();
         } else if (msg.type === 'progress') {
-            // console.log(msg.value);
             progress = msg.value;
         } else if (msg.result !== undefined) {
             countdown.stop();
@@ -93,27 +94,27 @@ async function runChildAsync(fileToImport, stopwatch) {
         countdown.stop();
         childClosedPromiseResolver();
     });
-    child.send({ solutionPath: fileToImport });
+    child.send({ solutionPath: fileToImport, parts });
 
     await childClosedPromise;
     clearInterval(countDownIntervalId);
 }
 
-async function runAsync(selectedDay) {
+async function runAsync(selectedDay, parts) {
     const filesToRun = await getSolutionFilesAsync(selectedDay);
     const stopwatch = new Stopwatch(true);
 
     for (const fileToRun of filesToRun) {
-        // if (process.env.DEBUG !== undefined) {
-        //     // eslint-disable-next-line global-require, import/no-dynamic-require
-        //     const solution = new (require(fileToRun))();
-        //     await solution.init(() => {});
-        //     debug(`[SYNC] ${solution.title}`);
-        //     debug(`Part 1: ${solution.part1()}`);
-        //     debug(`Part 2: ${solution.part2()}`);
-        // } else {
-        await runChildAsync(fileToRun, stopwatch);
-        // }
+        if (debugParams !== undefined) {
+            // eslint-disable-next-line global-require, import/no-dynamic-require
+            const solution = new (require(fileToRun))();
+            await solution.init(() => { });
+            debug(`[DEBUGGER] Day ${solution.day} ${solution.title}`);
+            if (parts.includes(1)) { debug(`Part 1: ${solution.part1()}`); }
+            if (parts.includes(2)) { debug(`Part 2: ${solution.part2()}`); }
+        } else {
+            await runChildAsync(fileToRun, parts, stopwatch);
+        }
     }
 
     const elapsed = stopwatch.stop();

@@ -3,16 +3,9 @@ const chalk = require('chalk').default;
 // eslint-disable-next-line no-unused-vars
 const Solution = require('./solution');
 
-const isSlowMode = process.env.SLOW !== undefined;
-
-function asyncWait(timeout) {
-    return new Promise(resolve => setTimeout(() => resolve, timeout ? 2500 : timeout));
-}
-
 async function wrapSolutionAsync(partNumber, func) {
     try {
         const result = func();
-        if (isSlowMode) { await asyncWait(); }
         process.send({ part: partNumber, result });
     } catch (err) {
         debug(chalk.bgRedBright(`${err.stack}`));
@@ -20,7 +13,7 @@ async function wrapSolutionAsync(partNumber, func) {
     }
 }
 
-async function runSolution(solutionPath) {
+async function runSolution(solutionPath, parts) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const SolutionDayXX = require(solutionPath);
     /** @type { Solution } */
@@ -36,15 +29,19 @@ async function runSolution(solutionPath) {
         }
     });
 
-    await wrapSolutionAsync(1, () => solution.part1());
+    if (parts.includes(1)) {
+        await wrapSolutionAsync(1, () => solution.part1());
+    }
     lastProgress = undefined;
-    await wrapSolutionAsync(2, () => solution.part2());
+    if (parts.includes(2)) {
+        await wrapSolutionAsync(2, () => solution.part2());
+    }
 
     process.exit();
 }
 
 process.on('message', async message => {
     if (message.solutionPath) {
-        await runSolution(message.solutionPath);
+        await runSolution(message.solutionPath, message.parts);
     }
 });
