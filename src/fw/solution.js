@@ -54,7 +54,7 @@ class Solution {
      * @param { Number } max The max value. default = 100.
      * @param { Number } min The min value. default = 0.
      */
-    progress(current, max = 100, min = 0) {
+    progress(current, max = 1, min = 0) {
         const d = 100 / (max - min);
         // eslint-disable-next-line no-param-reassign
         current = (current - min) * d;

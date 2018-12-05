@@ -9,6 +9,7 @@ class Day05 extends Solution {
         let [a, b] = this.process(this.input[0]);
         let length = a.length;
         do {
+            this.progress(1 - length / this.input[0].length);
             length = a.length;
             for (let i = 0; i < length - 1; i++) {
                 if (a[i] === b[i + 1]) {
@@ -30,8 +31,6 @@ class Day05 extends Solution {
         let minlength = this.input[0].length;
         let minChars;
         for (let charCode = 65; charCode < 91; charCode++) {
-            this.progress(charCode, 91, 65);
-
             let [a, b] = this.process(this.input[0]);
             const charsToRemove = [String.fromCharCode(charCode), String.fromCharCode(charCode + 32)];
             a = Array.from(a.filter(c => !charsToRemove.includes(c)));
@@ -39,6 +38,8 @@ class Day05 extends Solution {
 
             let length = a.length;
             do {
+                this.progress(charCode + (1 - length / this.input[0].length), 91, 65);
+
                 length = a.length;
                 for (let i = 0; i < length - 1; i++) {
                     if (a[i] === b[i + 1]) {
