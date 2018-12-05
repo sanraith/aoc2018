@@ -27,22 +27,22 @@ class Day05 extends Solution {
 
     reduce(input) {
         const polimer = input;
-        const inverse = Array.from(polimer.map(c => (c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase())));
+        const inverse = Array.from(polimer.map(c => c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase()));
 
-        const check = [0, 1];
-        while (check[0] !== undefined && check[1] !== undefined) {
-            if (polimer[check[0]] === inverse[check[1]]) {
-                polimer[check[0]] = '_';
-                polimer[check[1]] = '_';
-                check[0] = this.findNextUnit(polimer, check[0], -1);
-                check[1] = this.findNextUnit(polimer, check[1], 1);
+        const check = { a: 0, b: 1 };
+        while (check.a !== undefined && check.b !== undefined) {
+            if (polimer[check.a] === inverse[check.b]) {
+                polimer[check.a] = '_';
+                polimer[check.b] = '_';
+                check.a = this.findNextUnit(polimer, check.a, -1);
+                check.b = this.findNextUnit(polimer, check.b, 1);
             } else {
-                check[0] = undefined;
+                check.a = undefined;
             }
 
-            if (check[0] === undefined) {
-                check[0] = this.findNextUnit(polimer, check[1] - 1, 1);
-                check[1] = this.findNextUnit(polimer, check[0], 1);
+            if (check.a === undefined) {
+                check.a = this.findNextUnit(polimer, check.b - 1, 1);
+                check.b = this.findNextUnit(polimer, check.a, 1);
             }
         }
 

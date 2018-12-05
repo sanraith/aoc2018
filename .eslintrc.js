@@ -11,7 +11,8 @@ module.exports = {
         "no-restricted-syntax": "off",
         "no-plusplus": "off",
         "class-methods-use-this": "off",
-        "prefer-destructuring" : "off",
+        "prefer-destructuring": "off",
+        "no-confusing-arrow": "off",
         "no-return-assign": ["error", "except-parens"],
     }
 };
