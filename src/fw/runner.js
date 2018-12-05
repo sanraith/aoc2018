@@ -104,16 +104,16 @@ async function runAsync(selectedDay) {
     const stopwatch = new Stopwatch(true);
 
     for (const fileToRun of filesToRun) {
-        if (process.env.DEBUG !== undefined) {
-            // eslint-disable-next-line global-require, import/no-dynamic-require
-            const solution = new (require(fileToRun))();
-            await solution.init(() => {});
-            debug(`[SYNC] ${solution.title}`);
-            debug(`Part 1: ${solution.part1()}`);
-            debug(`Part 2: ${solution.part2()}`);
-        } else {
-            await runChildAsync(fileToRun, stopwatch);
-        }
+        // if (process.env.DEBUG !== undefined) {
+        //     // eslint-disable-next-line global-require, import/no-dynamic-require
+        //     const solution = new (require(fileToRun))();
+        //     await solution.init(() => {});
+        //     debug(`[SYNC] ${solution.title}`);
+        //     debug(`Part 1: ${solution.part1()}`);
+        //     debug(`Part 2: ${solution.part2()}`);
+        // } else {
+        await runChildAsync(fileToRun, stopwatch);
+        // }
     }
 
     const elapsed = stopwatch.stop();
