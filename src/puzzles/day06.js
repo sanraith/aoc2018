@@ -8,18 +8,7 @@ class Day06 extends Solution {
 
     part1() {
         const coords = this.parseCoords();
-        const bounds = {
-            left: coords[0].x,
-            right: coords[0].x,
-            top: coords[0].y,
-            bottom: coords[0].y
-        };
-        for (const coord of coords) {
-            bounds.left = Math.min(bounds.left, coord.x);
-            bounds.right = Math.max(bounds.right, coord.x);
-            bounds.top = Math.min(bounds.top, coord.y);
-            bounds.bottom = Math.max(bounds.bottom, coord.y);
-        }
+        const bounds = this.getBounds(coords);
 
         // translate coords to minimize field size, leaving a 1 cell thick border border
         this.translate(coords, bounds, bounds.left - 1, bounds.top - 1);
@@ -60,30 +49,22 @@ class Day06 extends Solution {
 
     part2() {
         const coords = this.parseCoords();
-        const bounds = {
-            left: coords[0].x,
-            right: coords[0].x,
-            top: coords[0].y,
-            bottom: coords[0].y
-        };
-        for (const coord of coords) {
-            bounds.left = Math.min(bounds.left, coord.x);
-            bounds.right = Math.max(bounds.right, coord.x);
-            bounds.top = Math.min(bounds.top, coord.y);
-            bounds.bottom = Math.max(bounds.bottom, coord.y);
-        }
+        const bounds = this.getBounds(coords);
         const diff = 10000;
 
         let count = 0;
         for (let y = bounds.top - diff; y < bounds.bottom + diff; y++) {
+            this.progress(y, bounds.bottom + diff, bounds.top - diff);
             for (let x = bounds.left - diff; x < bounds.right + diff; x++) {
-                const sum = coords.reduce((acc, c) => acc + this.manhattan(x, y, c), 0);
+                let sum = 0;
+                for (const coord of coords) {
+                    sum += this.manhattan(x, y, coord);
+                    if (sum >= diff) { break; }
+                }
                 if (sum < diff) {
                     count++;
                 }
             }
-
-            this.progress(y, bounds.bottom + diff, bounds.top - diff);
         }
 
         return count;
@@ -106,6 +87,22 @@ class Day06 extends Solution {
         bounds.right -= left;
         bounds.top -= top;
         bounds.bottom -= top;
+    }
+
+    getBounds(coords) {
+        const bounds = {
+            left: coords[0].x,
+            right: coords[0].x,
+            top: coords[0].y,
+            bottom: coords[0].y
+        };
+        for (const coord of coords) {
+            bounds.left = Math.min(bounds.left, coord.x);
+            bounds.right = Math.max(bounds.right, coord.x);
+            bounds.top = Math.min(bounds.top, coord.y);
+            bounds.bottom = Math.max(bounds.bottom, coord.y);
+        }
+        return bounds;
     }
 
     parseCoords() {
