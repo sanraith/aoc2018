@@ -9,21 +9,13 @@ class Day06 extends Solution {
     part1() {
         const coords = this.parseCoords();
         const bounds = this.getBounds(coords);
-
         // translate coords to minimize field size, leaving a 1 cell thick border border
         this.translate(coords, bounds, bounds.left - 1, bounds.top - 1);
 
-        // generate field
-        const field = new Array(bounds.bottom + 2);
-        for (const index of field.keys()) {
-            field[index] = new Array(bounds.right + 2);
-        }
-
-        // fill field with distances
-        const areaSizes = Array.from(new Map(coords.map((_, i) => [i, 0])).values());
-        for (const [y, line] of field.entries()) {
-            this.progress(y, field.length);
-            for (const x of line.keys()) {
+        const areaSizes = coords.map(() => 0);
+        for (let y = 0; y < bounds.bottom + 1; y++) {
+            this.progress(y, bounds.bottom + 1);
+            for (let x = 0; x < bounds.right + 1; x++) {
                 let minDist = Number.POSITIVE_INFINITY;
                 let minIndex;
                 for (const [index, coord] of coords.entries()) {
@@ -31,20 +23,17 @@ class Day06 extends Solution {
                     if (dist < minDist) {
                         minDist = dist;
                         minIndex = index;
-                    } else if (minDist === dist) {
-                        minIndex = '.';
                     }
                 }
                 if (this.isOnBorder(x, y, bounds)) {
                     areaSizes[minIndex] = undefined;
                 } else if (areaSizes[minIndex] !== undefined) {
-                    areaSizes[minIndex] += 1;
+                    areaSizes[minIndex]++;
                 }
-                line[x] = minIndex;
             }
         }
 
-        return Math.max(...areaSizes.map(x => x === undefined ? -1 : x));
+        return areaSizes.reduce((max, s = -1) => Math.max(max, s), -1);
     }
 
     part2() {
@@ -52,7 +41,7 @@ class Day06 extends Solution {
         const bounds = this.getBounds(coords);
         const diff = 10000;
 
-        let count = 0;
+        let areaSize = 0;
         for (let y = bounds.top - diff; y < bounds.bottom + diff; y++) {
             this.progress(y, bounds.bottom + diff, bounds.top - diff);
             for (let x = bounds.left - diff; x < bounds.right + diff; x++) {
@@ -62,12 +51,12 @@ class Day06 extends Solution {
                     if (sum >= diff) { break; }
                 }
                 if (sum < diff) {
-                    count++;
+                    areaSize++;
                 }
             }
         }
 
-        return count;
+        return areaSize;
     }
 
     isOnBorder(x, y, bounds) {

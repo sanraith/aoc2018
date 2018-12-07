@@ -108,7 +108,7 @@ async function runAsync(selectedDay, parts) {
         if (debugParams !== undefined) {
             // eslint-disable-next-line global-require, import/no-dynamic-require
             const solution = new (require(fileToRun))();
-            await solution.init(() => { });
+            await solution.init();
             debug(`[DEBUGGER] Day ${solution.day} ${solution.title}`);
             if (parts.includes(1)) { debug(`Part 1: ${solution.part1()}`); }
             if (parts.includes(2)) { debug(`Part 2: ${solution.part2()}`); }

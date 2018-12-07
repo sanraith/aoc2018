@@ -24,7 +24,7 @@ class Solution {
     /** @type { Array<String> } */
     get input() { return this._input; }
 
-    async init(onProgressChanged) {
+    async init(onProgressChanged = () => { }) {
         this._onProgressChanged = onProgressChanged;
         const dayStr = this.day.toString().padStart(2, '0');
         const inputPath = path.join(inputDir, `day${dayStr}.txt`);
@@ -38,12 +38,10 @@ class Solution {
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part1() {
         return undefined;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     part2() {
         return undefined;
     }
@@ -51,7 +49,7 @@ class Solution {
     /**
      * Announce the current progress.
      * @param { Number } current The current value;
-     * @param { Number } max The max value. default = 100.
+     * @param { Number } max The max value. default = 1.
      * @param { Number } min The min value. default = 0.
      */
     progress(current, max = 1, min = 0) {
