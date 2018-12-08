@@ -39,18 +39,19 @@ class Day06 extends Solution {
     part2() {
         const coords = this.parseCoords();
         const bounds = this.getBounds(coords);
-        const diff = 10000;
+        const maxSum = 10000;
+        const borderSize = Math.ceil(maxSum / coords.length);
 
         let areaSize = 0;
-        for (let y = bounds.top - diff; y < bounds.bottom + diff; y++) {
-            this.progress(y, bounds.bottom + diff, bounds.top - diff);
-            for (let x = bounds.left - diff; x < bounds.right + diff; x++) {
+        for (let y = bounds.top - borderSize; y < bounds.bottom + borderSize; y++) {
+            this.progress(y, bounds.bottom + borderSize, bounds.top - borderSize);
+            for (let x = bounds.left - borderSize; x < bounds.right + borderSize; x++) {
                 let sum = 0;
                 for (const coord of coords) {
                     sum += this.manhattan(x, y, coord);
-                    if (sum >= diff) { break; }
+                    if (sum >= maxSum) { break; }
                 }
-                if (sum < diff) {
+                if (sum < maxSum) {
                     areaSize++;
                 }
             }
