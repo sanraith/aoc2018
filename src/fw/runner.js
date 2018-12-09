@@ -2,11 +2,11 @@
 /* eslint-disable no-await-in-loop */
 const debug = require('debug')('aoc.fw.runner');
 const path = require('path');
-const fs = require('fs-extra');
-const { Spinner } = require('clui');
+const { Progress, Spinner } = require('clui');
 const Stopwatch = require('statman-stopwatch');
 const { fork } = require('child_process');
-const { puzzleDir } = require('./paths');
+const chalk = require('chalk').default;
+const { getSolutionFilesAsync } = require('./paths');
 
 const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
 
@@ -22,51 +22,14 @@ function msToTime(duration) {
     return `${hours}:${minutes}:${seconds}.${milliseconds}`;
 }
 
-/**
- * Get solution files based on the selected day.
- * undefined => all solution files.
- * number => selected solution file if exists, or last.
- * @param {*} selectedDay
- * @returns { Array<String> } Full paths to the selected solution files.
- */
-async function getSolutionFilesAsync(selectedDay) {
-    const selectedDayNumber = parseInt(selectedDay, 10);
-
-    // Write available files to console
-    const files = await fs.readdir(puzzleDir);
-
-    let selectedFile;
-    // If a day is selected, fall back to last file.
-    if (selectedDay !== undefined) {
-        [selectedFile] = files.slice(-1);
-    }
-
-    // Select the file based on the day.
-    if (Number.isInteger(selectedDayNumber)) {
-        const solutionFileRegex = /day(?:([0-9]{2}))\.js/;
-        const tempFile = files.filter(f => parseInt(solutionFileRegex.exec(f)[1], 10) === selectedDayNumber)[0];
-        selectedFile = tempFile === undefined ? selectedFile : tempFile;
-    }
-
-    let selectedFiles = [selectedFile];
-    // If no day is selected, fall back to every file.
-    if (selectedFile === undefined) { selectedFiles = files; }
-
-    // Convert files names to full paths.
-    selectedFiles = selectedFiles.map(x => path.join(puzzleDir, x));
-    debug(`Selected: ${selectedFiles} for ${selectedDayNumber}`);
-
-    return selectedFiles;
-}
-
 async function runChildAsync(fileToImport, parts, stopwatch) {
     const countdown = new Spinner('Thinking...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
+    const progressBar = new Progress(30);
     let progress;
-
     const countDownIntervalId = setInterval(() => {
         if (progress) {
-            const progressStr = (parseInt(progress * 100, 10) / 100).toFixed(2).toString().padStart(6, ' ');
-            countdown.message(`Thinking... ${msToTime(stopwatch.read())} ${progressStr}%`);
+            const progressStr = progressBar.update(progress / 100);
+            countdown.message(`Thinking... ${msToTime(stopwatch.read())}  ${chalk.white(progressStr)} `);
         } else {
             countdown.message(`Thinking... ${msToTime(stopwatch.read())}`);
         }
