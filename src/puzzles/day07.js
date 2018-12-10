@@ -53,7 +53,8 @@ class Day07 extends Solution {
             }
 
             // progress work
-            const time = elves.reduce((t, e) => Math.min(t, e.remaining > 0 ? e.remaining : t), Number.POSITIVE_INFINITY);
+            const time = elves.reduce((t, e) => Math.min(t, e.remaining > 0 ? e.remaining : t),
+                Number.POSITIVE_INFINITY);
             elves.forEach(e => (e.remaining -= time));
             elapsedTime = time === Number.POSITIVE_INFINITY ? 0 : time;
             totalTime += elapsedTime;
