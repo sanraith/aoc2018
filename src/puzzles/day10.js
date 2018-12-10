@@ -9,7 +9,8 @@ class Day10 extends Solution {
     constructor() { super(10, 'The Stars Align'); }
 
     part1() {
-        return this.solve().map.reduce((acc, x) => `${acc}\n${x.join('')}`, '');
+        const { map } = this.solve();
+        return `\n${map.map(x => x.join('')).join('\n')}`;
     }
 
     part2() {
@@ -20,16 +21,16 @@ class Day10 extends Solution {
         const stars = this.parseCoords();
 
         const ref = stars[0];
-        const diffs = stars.slice(1).map(x => this.getCollision(ref, x, 100));
+        const diffs = stars.slice(1).map(x => this.getCollision(ref, x, 1000));
         let minTime = diffs.reduce((acc, x) => x[0] > acc ? x[0] : acc, Number.NEGATIVE_INFINITY);
         let maxTime = diffs.reduce((acc, x) => x[1] < acc ? x[1] : acc, Number.POSITIVE_INFINITY);
-        [minTime, maxTime] = [Math.ceil(Math.max(0, minTime)), Math.floor(maxTime)].sort();
+        [minTime, maxTime] = [Math.ceil(Math.max(0, minTime)), Math.floor(maxTime)].sort((a, b) => a - b);
 
         let minSize = Number.POSITIVE_INFINITY;
         let correctTime;
         this.progressTime(stars, minTime);
         for (let i = minTime; i < maxTime; i++) {
-            const size = this.visualize(stars, false).size;
+            const { size } = this.visualize(stars, false);
             if (size < minSize) {
                 correctTime = i;
                 minSize = size;
@@ -65,7 +66,7 @@ class Day10 extends Solution {
             }
             for (const star of stars) {
                 const [x, y] = [star.x - minX, star.y - minY];
-                map[y][x] = '*';
+                map[y][x] = '@';
             }
         }
 
