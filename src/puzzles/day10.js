@@ -10,7 +10,7 @@ class Day10 extends Solution {
 
     part1() {
         const { map } = this.solve();
-        return `\n${map.map(x => x.join('')).join('\n')}`;
+        return map.map(x => x.join('')).join('\n           ');
     }
 
     part2() {
