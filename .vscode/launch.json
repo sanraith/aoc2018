@@ -27,7 +27,7 @@
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}\\app.js",
             "args": [
-                "11", "2"
+                "12", "2"
             ],
             "env": {
                 "DEBUG": "aoc*",

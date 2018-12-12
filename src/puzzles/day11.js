@@ -37,8 +37,7 @@ class Day11 extends Solution {
 
     getMaxSum(grid, gridSize, size, cache = undefined) {
         if (cache) { cache[size] = {}; }
-        const factor = primeFactors(size)[0] || size;
-        const partSize = factor !== size ? size / factor : size;
+        const partSize = this.getPartSize(size);
         const sumFunc = cache ? this.getCachedSum : this.getSum;
 
         let maxSum = Number.NEGATIVE_INFINITY;
@@ -54,6 +53,12 @@ class Day11 extends Solution {
             }
         }
         return { sum: maxSum, x: maxX, y: maxY };
+    }
+
+    getPartSize(size) {
+        const factor = primeFactors(size)[0] || size;
+        const partSize = factor !== size ? size / factor : size;
+        return partSize;
     }
 
     getSum(grid, size, sx, sy) {
@@ -111,6 +116,28 @@ class Day11 extends Solution {
         }
         return grid;
     }
+
+    // getWeirdSum(grid, sizeX, sizeY, sx, sy, cache) {
+    //     const size = Math.min(sizeX, sizeY);
+    //     const max = Math.max(sizeX, sizeY);
+    //     const count = Math.floor(max / size);
+    //     const remainder = max % size;
+    //     const partSize = this.getPartSize(size);
+    //     if (size === 0) { return 0; }
+    //     let sum = 0;
+    //     for (let i = 0; i < size; i += sizeX) {
+    //         for (let j = 0; j < size; j += sizeX) {
+    //             sum += this.getCachedSum(grid, size, sx + i, sy + j, cache, partSize);
+    //         }
+    //     }
+    //     if (sizeX > sizeY) {
+    //         sum += this.getWeirdSum(grid, remainder, sizeY, )
+    //     } else {
+    //         sum += this.getWeirdSum(grid, sizeX)
+    //     }
+
+    //     return sum;
+    // }
 
     // getCachedSumWithoutFactors(grid, size, sx, sy, cache) {
     //     const key = this.getKey(sx, sy);
