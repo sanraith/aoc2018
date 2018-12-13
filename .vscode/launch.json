@@ -8,30 +8,16 @@
             "type": "node",
             "request": "launch",
             "protocol": "inspector",
-            "name": "Last puzzle",
-            "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}\\app.js",
-            "args": [
-                "99"
-            ],
-            "env": {
-                "DEBUG": "aoc*",
-                "DEBUGGER" : "true"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "protocol": "inspector",
             "name": "Selected puzzle",
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}\\app.js",
             "args": [
-                "12", "2"
+                "${input:day}",
+                "${input:part}"
             ],
             "env": {
                 "DEBUG": "aoc*",
-                "DEBUGGER" : "true"
+                "DEBUGGER": "true"
             }
         },
         {
@@ -43,8 +29,23 @@
             "program": "${workspaceFolder}\\app.js",
             "env": {
                 "DEBUG": "aoc*",
-                "DEBUGGER" : "true"
+                "DEBUGGER": "true"
             }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "day",
+            "default": "99",
+            "description": "Select day. [1..25] or 99 for last day.",
+            "type": "promptString",
+        },
+        {
+            "id": "part",
+            "default": "2",
+            "description": "Select part of day.",
+            "type": "pickString",
+            "options": ["1", "2"]
         }
     ]
 }
