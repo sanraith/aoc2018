@@ -40,14 +40,14 @@ class Day13 extends Solution {
 
     /**
      * @param { Array<Array<string>>} map
-     * @param { Array<{x: number, y: number, direction: number}>} carts
+     * @param { Array<{x: number, y: number, direction: number, memory: number}>} carts
      */
     step(map, carts, shouldRemove = false) {
         carts.sort((a, b) => (a.y - b.y) * 10000 + (a.x - b.x));
         for (const cart of carts.slice(0)) {
-            const delta = DIRECTIONS[cart.direction];
-            cart.x += delta[0];
-            cart.y += delta[1];
+            const [dx, dy] = DIRECTIONS[cart.direction];
+            cart.x += dx;
+            cart.y += dy;
             const track = map[cart.y][cart.x];
             if (track === '+') {
                 cart.direction = TRANSITIONS.get(track)[(cart.direction + cart.memory + 3) % 4];
@@ -60,8 +60,8 @@ class Day13 extends Solution {
             // eslint-disable-next-line no-cond-assign
             if ((collision = this.collision(carts))) {
                 if (shouldRemove) {
-                    carts.splice(carts.findIndex(c => c === collision.a), 1);
-                    carts.splice(carts.findIndex(c => c === collision.b), 1);
+                    carts.splice(carts.indexOf(collision.a), 1);
+                    carts.splice(carts.indexOf(collision.b), 1);
                 } else {
                     return collision;
                 }
@@ -72,9 +72,11 @@ class Day13 extends Solution {
 
     collision(carts) {
         for (let i = 0; i < carts.length; i++) {
+            const a = carts[i];
             for (let j = i + 1; j < carts.length; j++) {
-                if (carts[i].x === carts[j].x && carts[i].y === carts[j].y) {
-                    return { a: carts[i], b: carts[j] };
+                const b = carts[j];
+                if (a.x === b.x && a.y === b.y) {
+                    return { a, b };
                 }
             }
         }
