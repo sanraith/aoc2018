@@ -3,7 +3,7 @@ module.exports = {
     "rules": {
         // windows linebreaks when not in production environment
         "linebreak-style": ["error", process.env.NODE_ENV === 'prod' ? "unix" : "windows"],
-        "indent": ["error", 4],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "max-len": ["error", 120],
         "arrow-parens": ["error", "as-needed"],
         "comma-dangle": ["error", "only-multiline"],
@@ -14,5 +14,7 @@ module.exports = {
         "prefer-destructuring": "off",
         "no-confusing-arrow": "off",
         "no-return-assign": ["error", "except-parens"],
+        "no-continue": "off",
+        "object-curly-newline": "off",
     }
 };
