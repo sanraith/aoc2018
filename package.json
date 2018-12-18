@@ -21,6 +21,9 @@
     "url": "https://github.com/sanraith/aoc2018/issues"
   },
   "homepage": "https://github.com/sanraith/aoc2018#readme",
+  "nodemonConfig": {
+    "ext": "js,txt"
+  },
   "dependencies": {
     "chalk": "^2.4.1",
     "clui": "^0.3.6",
