@@ -2,17 +2,22 @@ const debug = require('debug')('aoc.fw.solution');
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk').default;
+const EventEmitter = require('events');
 const { inputDir } = require('./paths');
 
-class Solution {
+class Solution extends EventEmitter {
     /**
      * @param { Number } day The number of the day.
      * @param { String } title The title of the puzzle.
      */
     constructor(day, title) {
+        super();
         this._day = day;
         this._title = title;
         this._onProgressChanged = undefined;
+
+        /** @type { {width: number, height: number} } */
+        this.canvas = { width: 0, height: 0 };
     }
 
     /** @type { String } */
@@ -24,8 +29,9 @@ class Solution {
     /** @type { Array<String> } */
     get input() { return this._input; }
 
-    async init(onProgressChanged = () => { }) {
-        this._onProgressChanged = onProgressChanged;
+    get visualizationOn() { return this.listeners('frame').length > 0; }
+
+    async init() {
         const dayStr = this.day.toString().padStart(2, '0');
         const inputPath = path.join(inputDir, `day${dayStr}.txt`);
         try {
@@ -47,6 +53,14 @@ class Solution {
     }
 
     /**
+     * Send an animation frame to be visualized.
+     * @param { Array<string> } lines
+     */
+    frame(lines) {
+        this.emit('frame', lines);
+    }
+
+    /**
      * Announce the current progress.
      * @param { Number } current The current value;
      * @param { Number } max The max value. default = 1.
@@ -56,7 +70,7 @@ class Solution {
         const d = 100 / (max - min);
         // eslint-disable-next-line no-param-reassign
         current = (current - min) * d;
-        this._onProgressChanged(current);
+        this.emit('progress', current);
     }
 }
 

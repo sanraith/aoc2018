@@ -8,7 +8,7 @@
     "start": "node app.js",
     "nodemon": "nodemon app.js",
     "debug": "set DEBUG=aoc* && nodemon app.js",
-    "term": "node src\\fw\\terminal_test.js",
+    "term": "nodemon src\\fw\\terminal_test.js",
     "lint": "eslint app.js src"
   },
   "repository": {
@@ -28,6 +28,7 @@
     "chalk": "^2.4.1",
     "clui": "^0.3.6",
     "debug": "^4.1.0",
+    "delay": "^4.1.0",
     "fs-extra": "^7.0.1",
     "nodemon": "^1.18.7",
     "queue-fifo": "^0.2.5",

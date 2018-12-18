@@ -73,7 +73,7 @@ class Day15 extends Solution {
                 }
             }
         }
-        // this.visualize(walls, goblins, elves);
+        this.visualize(walls, goblins, elves);
 
         return true;
     }
@@ -87,6 +87,8 @@ class Day15 extends Solution {
     }
 
     visualize(walls, goblins, elves, pos = -1, path = [], visited = new Set()) {
+        if (!this.visualizationOn) { return; }
+        const lines = [];
         for (let y = 0; y < this.input.length; y++) {
             const line = [];
             for (let x = 0; x < this.mapWidth; x++) {
@@ -105,8 +107,9 @@ class Day15 extends Solution {
                     line.push('.');
                 }
             }
-            debug(line.join(''));
+            lines.push(line.join(''));
         }
+        this.frame(lines);
     }
 
     /**

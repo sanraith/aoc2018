@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 const debug = require('debug')('aoc.fw.runner');
 const path = require('path');
@@ -6,9 +5,12 @@ const { Progress, Spinner } = require('clui');
 const Stopwatch = require('statman-stopwatch');
 const { fork } = require('child_process');
 const chalk = require('chalk').default;
+const { animate } = require('./animator');
 const { getSolutionFilesAsync } = require('./paths');
+const Screen = require('./screen');
 
 const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
+const screen = new Screen();
 
 function msToTime(duration) {
     let milliseconds = parseInt((duration % 1000), 10);
@@ -40,16 +42,17 @@ async function runChildAsync(fileToImport, parts, stopwatch) {
     // eslint-disable-next-line no-return-assign
     const childClosedPromise = new Promise(res => (childClosedPromiseResolver = res));
 
-    child.on('message', msg => {
+    const animations = [];
+    child.on('message', async msg => {
         if (msg.type === 'info') {
-            console.log(`Day ${msg.day} - ${msg.title}`);
+            screen.addHeader(`Day ${msg.day} - ${msg.title}`);
             countdown.start();
         } else if (msg.type === 'progress') {
             progress = msg.value;
         } else if (msg.result !== undefined) {
             countdown.stop();
-            // TODO replace with more sophisticated UI.
-            console.log(` - Part ${msg.part}: ${msg.result}`);
+            screen.addHeader(` - Part ${msg.part}: ${msg.result}`);
+            animations.push(msg.frames);
             progress = undefined;
             countdown.start();
         }
@@ -61,6 +64,10 @@ async function runChildAsync(fileToImport, parts, stopwatch) {
 
     await childClosedPromise;
     clearInterval(countDownIntervalId);
+
+    for (const animation of animations) {
+        await animate(screen, animation);
+    }
 }
 
 async function runAsync(selectedDay, parts) {

@@ -13,8 +13,10 @@ class Day18 extends Solution {
     part1() {
         let map = this.parseInput();
         for (let i = 0; i < 10; i++) {
+            this.visualize(map);
             map = this.tick(map);
         }
+        this.visualize(map);
 
         return this.resourceValue(map);
     }
@@ -26,6 +28,7 @@ class Day18 extends Solution {
         const hashes = new Map();
         for (let i = 0; i < minuteCount; i++) {
             this.progress(i, minuteCount);
+            this.visualize(map);
 
             map = this.tick(map);
             const hash = this.hash(map);
@@ -40,6 +43,7 @@ class Day18 extends Solution {
                 hashes.set(hash, i);
             }
         }
+        this.visualize(map);
 
         return this.resourceValue(map);
     }
@@ -99,7 +103,8 @@ class Day18 extends Solution {
 
     /** @param { Map<number, string> } map */
     visualize(map) {
-        debug('');
+        if (!this.visualizationOn) { return; }
+        const lines = [];
         for (let y = 0; y < this.height; y++) {
             const line = [];
             for (let x = 0; x < this.width; x++) {
@@ -110,8 +115,9 @@ class Day18 extends Solution {
                     line.push(EMPTY);
                 }
             }
-            debug(line.join(''));
+            lines.push(line.join(''));
         }
+        this.frame(lines);
     }
 
     /** Converts back and forth between [x, y] and [p] type coordinates.
