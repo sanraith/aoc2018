@@ -20,6 +20,7 @@ async function animate(screen, frames) {
         canvas.draw([progress.update(index, frames.length)].concat(frame));
         await delay(delayMs);
     }
+    canvas.dispose();
 }
 
 module.exports = {

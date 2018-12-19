@@ -5,9 +5,10 @@ const termkit = require('terminal-kit');
 const { ScreenBuffer, TextBuffer } = termkit;
 
 class Canvas {
-    constructor(canvasBuffer, parentRedraw) {
+    constructor(canvasBuffer, parentRedraw, notifyDispose) {
         this.buffer = canvasBuffer;
         this.parentRedraw = parentRedraw;
+        this.dispose = notifyDispose;
     }
 
     get width() { return this.buffer.width; }
@@ -32,7 +33,8 @@ class Canvas {
 }
 
 class Screen {
-    constructor() {
+    constructor(simple = false) {
+        this.simple = simple;
         this.term = termkit.terminal;
         this.term.clear();
         /** @type { ScreenBuffer } */
@@ -43,7 +45,7 @@ class Screen {
             dst: this.screen, x: 0, y: 0
         });
         this.lines = [];
-        this.maxLineCount = Math.floor(this.screen.height / 3);
+        this.maxLineCount = 14; // Math.floor(this.screen.height / 3);
     }
 
     clear() {
@@ -51,6 +53,7 @@ class Screen {
     }
 
     redraw() {
+        this.clear();
         this.textBuffer.draw({ y: this._headerTop });
         this.screen.draw();
         this.term.moveTo(0, this._headerHeight);
@@ -62,15 +65,23 @@ class Screen {
         this.lines.push(...lines);
 
         for (const l of lines) {
-            this.textBuffer.insert(l);
-            this.textBuffer.insert('\n');
+            if (this.simple) {
+                // eslint-disable-next-line no-console
+                console.log(l);
+            } else {
+                this.textBuffer.insert(l);
+                this.textBuffer.insert('\n');
+            }
         }
 
-        this.redraw();
+        if (!this.simple) { this.redraw(); }
     }
 
     get _headerTop() {
+        // if (this.hasAnimationCanvas) {
         return Math.min(0, this.maxLineCount - this.lines.length);
+        // }
+        // return Math.min(0, this.screen.height - this.lines.length);
     }
 
     get _headerHeight() {
@@ -78,10 +89,14 @@ class Screen {
     }
 
     getCanvas() {
+        this.hasAnimationCanvas = true;
         const canvasBuffer = new ScreenBuffer({
             dst: this.screen, x: 0, y: this._headerHeight
         });
-        return new Canvas(canvasBuffer, () => this.screen.draw());
+        this.redraw();
+        return new Canvas(canvasBuffer, () => this.screen.draw(), () => {
+            this.hasAnimationCanvas = false; this.redraw();
+        });
     }
 }
 
