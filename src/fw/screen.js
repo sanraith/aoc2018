@@ -46,7 +46,9 @@ class Screen {
         this.maxLineCount = Math.floor(this.screen.height / 3);
     }
 
-    clear() { this.screen.fill({ char: ' ' }); }
+    clear() {
+        this.screen.fill({ char: ' ' });
+    }
 
     redraw() {
         this.clear();

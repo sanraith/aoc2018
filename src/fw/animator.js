@@ -11,6 +11,7 @@ const Screen = require('./screen');
  * @param { Array<Array<string>> } frames
  */
 async function animate(screen, frames) {
+    if (frames.length === 0) { return; }
     const canvas = screen.getCanvas();
     const progress = new Progress(45);
     const targetLength = 3000;
