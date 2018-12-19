@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-bitwise */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
@@ -16,68 +16,67 @@ class Day19 extends Solution {
         return registers[0];
     }
 
-    part2Slooooooow() {
+    part2() {
+        this.printConvertedSource();
         const { ip, program } = this.parseInput();
-        const registers = this.runProgram(program, ip, [1, 0, 0, 0, 0, 0]);
+        const modes = { translated: 0, injected: 1, rewritten: 2 };
+        const mode = modes.rewritten;
 
-        return registers[0];
+        switch (mode) {
+            case modes.translated: // ~too much
+                return this.part2Translated();
+            case modes.injected: // ~4 sec
+                return this.runProgram(program, ip, [1, 0, 0, 0, 0, 0])[0];
+            case modes.rewritten: // ~0 sec
+                return this.part2Rewritten();
+            default:
+                return undefined;
+        }
     }
 
-    part2() {
+    part2Rewritten() {
+        const target = 10551378;
+        let sum = 0;
+        for (let i = 1; i <= target; i++) {
+            sum += target % i === 0 ? i : 0;
+        }
+        return sum;
+    }
+
+    part2Translated() {
         const r = [1, 0, 0, 0, 0, 0];
         let [a, b, c, ip, targetE, f] = r;
 
         // JUMP TO 17
         /*  0 */ ip += 16;
-
-        // JUMPED FROM 0
         // EASY MODE INITIALIZE
         /* 17 */ targetE += 2;
         /* 18 */ targetE *= targetE;
         /* 19 */ targetE *= 19; // e = ip * e;
-        /* 20 */ targetE += 11;
+        /* 20 */ targetE *= 11;
         /* 21 */ b += 6;
         /* 22 */ b *= 22; // b = b * ip;
         /* 23 */ b += 10;
         /* 24 */ targetE += b;
-
         // JUMP TO 1 IF EASY MODE, ELSE CONTINUE 27
-        // /* 25 */ ip += a;
-        // /* 26 */ ip = 0; // NO EASY MODE :(
-
+        /* 25 */ ip += a;
+        // /* 26 */ ip = 0; // NO EASY MODE
         // HARD MODE INITIALIZE
         /* 27 */ b = 27; // b = ip;
         /* 28 */ b *= 28; // b = b * ip;
         /* 29 */ b += 29; // b = ip + b;
         /* 30 */ b *= 30; // b = ip * b;
-        /* 31 */ b += 14;
+        /* 31 */ b *= 14;
         /* 32 */ b *= 32; // b = b * ip;
         /* 33 */ targetE += b;
         /* 34 */ a = 0;
         // JUMP TO 1
-        // /* 35 */ ip = 0;
-
-        // JUMPED FROM 26, 35 (FROM INITIALIZE)
+        /* 35 */ ip = 0;
         /*  1 */ f = 1;
 
-        // a=0 b=754048 c=0 ip=0 e=754277 f=1
-        debug(a, b, c, ip, targetE, f);
-
-        let result = 0;
-        for (let f1 = 1; f1 <= targetE; f1++) {
-            if (targetE % f1 === 0) {
-                result += f1;
-            }
-        }
-        return result;
-
-        // count(x=1..754277, 754277 % x == 0 ? x : 0)*2
-        // 772716 too low.
-        // 1545432 too low.
-
-        do { /*  2 */ // f = 1..754277
+        do { /*  2 */ // f = 1..targetE
             c = 1;
-            do { /*  3 */ // c = 1..754277
+            do { /*  3 */ // c = 1..targetE
                 b = f * c;
                 if (b === targetE) {
                     a += f;
@@ -95,12 +94,12 @@ class Day19 extends Solution {
         return a;
     }
 
-    convertSourceToJs() {
+    printConvertedSource() {
         const { ip, program } = this.parseInput();
         const conversions = this.getTranslations(ip);
         for (const [i, [cmd, params]] of program.entries()) {
             // eslint-disable-next-line no-console
-            console.log(`/* ${(`${i}`).padStart(2, ' ')} */ ${conversions.get(cmd)(null, ...params)};`);
+            debug(`/* ${(`${i}`).padStart(2, ' ')} */ ${conversions.get(cmd)(null, ...params)};`);
         }
     }
 
@@ -109,8 +108,16 @@ class Day19 extends Solution {
         while (r[ip] >= 0 && r[ip] < program.length) {
             const instruction = program[r[ip]];
             const op = ops.get(instruction[0]);
-            op(r, ...instruction[1]);
-            r[ip]++;
+
+            // Replace slow modulo implementation
+            if (r[ip] === 2) {
+                this.progress(r[5], r[4]);
+                r[0] += ((r[4] % r[5] === 0) ? r[5] : 0);
+                r[ip] = 12;
+            } else {
+                op(r, ...instruction[1]);
+                r[ip]++;
+            }
         }
 
         return r;
@@ -137,7 +144,7 @@ class Day19 extends Solution {
             ['addi', (r, a, b, c) => `${l[c]} = ${l[a]} + ${b}`],
 
             ['mulr', (r, a, b, c) => `${l[c]} = ${l[a]} * ${l[b]}`],
-            ['muli', (r, a, b, c) => `${l[c]} = ${l[a]} + ${b}`],
+            ['muli', (r, a, b, c) => `${l[c]} = ${l[a]} * ${b}`],
 
             ['banr', (r, a, b, c) => `${l[c]} = ${l[a]} & ${l[b]}`],
             ['bani', (r, a, b, c) => `${l[c]} = ${l[a]} & ${b}`],

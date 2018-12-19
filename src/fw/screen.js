@@ -51,7 +51,6 @@ class Screen {
     }
 
     redraw() {
-        this.clear();
         this.textBuffer.draw({ y: this._headerTop });
         this.screen.draw();
         this.term.moveTo(0, this._headerHeight);
