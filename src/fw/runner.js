@@ -10,7 +10,7 @@ const { getSolutionFilesAsync } = require('./paths');
 const Screen = require('./screen');
 
 const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
-const screen = new Screen(false);
+const screen = new Screen(true);
 
 function msToTime(duration) {
     let milliseconds = parseInt((duration % 1000), 10);
