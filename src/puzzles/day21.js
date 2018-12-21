@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
 /* eslint-disable no-return-assign */
@@ -9,24 +10,59 @@ class Day21 extends Solution {
     constructor() { super(21, 'Chronal Conversion'); }
 
     part1() {
-        this.printConvertedSource();
-        return 0;
-
-        // const { ip, program } = this.parseInput();
-        // const r = [0, 0, 0, 0, 0, 0];
-        // // eslint-disable-next-line no-cond-assign
-        // while (this.runProgram(program, ip, r.slice()).infinite) {
-        //     debug(`${r}: infinite`);
-        //     r[0]++;
-        // }
-
-        // return r;
+        const target = this.part2Transpiled();
+        return target;
     }
 
     part2() {
-
+        const target = this.part2Transpiled(true);
+        return target;
     }
 
+    part2Transpiled(mostInstructions = false) {
+        const validParams = new Set();
+        const r = [0, 0, 0, 0, 0, 0];
+        let [a, b, c, ip, e, f] = r;
+
+        // bitwise check
+        /*  0 */ e = 123;
+        /*  1 */ e = e & 456;
+        if (e !== 72) { throw new Error('Invalid result'); }
+
+        /*  5 */ e = 0;
+        while (true) {
+            /*  6 */ c = e | 65536;         //        10000000000000000
+            /*  7 */ e = 6152285;           //  10111011110000001011101
+
+            while (true) {
+                /*  8 */ b = c & 255;       //                 11111111
+                /*  9 */ e = e + b;
+                /* 10 */ e = e & 16777215;  // 111111111111111111111111
+                /* 11 */ e = e * 65899;
+                /* 12 */ e = e & 16777215;  // 111111111111111111111111
+                if (c < 256) { break; }
+                /* 17 */ b = 0;
+                while (true) {
+                    /* 18 */ f = b + 1;
+                    /* 19 */ f = f * 256;
+                    if (f > c) { break; }
+                    /* 24 */ b = b + 1;
+                }
+                /* 26 */ c = b;
+            }
+
+            if (mostInstructions) {
+                if (validParams.has(e)) {
+                    return [...validParams].pop();
+                }
+                validParams.add(e);
+            } else {
+                return e;
+            }
+
+            if (e === a) { break; }
+        }
+    }
 
     printConvertedSource() {
         const { ip, program } = this.parseInput();
@@ -35,30 +71,6 @@ class Day21 extends Solution {
             // eslint-disable-next-line no-console
             console.log(`/* ${(`${i}`).padStart(2, ' ')} */ ${conversions.get(cmd)(null, ...params)};`);
         }
-    }
-
-    runProgram(program, ip, r = [0, 0, 0, 0, 0, 0]) {
-        const states = new Set();
-        const ops = this.getOps();
-        while (r[ip] >= 0 && r[ip] < program.length) {
-            const state = this.getState(r);
-            if (states.has(state)) {
-                return { infinite: true };
-            }
-            states.add(state);
-
-            const instruction = program[r[ip]];
-            const op = ops.get(instruction[0]);
-
-            op(r, ...instruction[1]);
-            r[ip]++;
-        }
-
-        return { r, infinite: false };
-    }
-
-    getState(r) {
-        return r.join(',');
     }
 
     parseInput() {
