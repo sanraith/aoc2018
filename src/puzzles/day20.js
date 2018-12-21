@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const debug = require('debug')('aoc.puzzles.day20');
+const Queue = require('queue-fifo');
 const Solution = require('../fw/solution');
 
 const TYPE_BRANCH = 'branch';
@@ -24,7 +25,8 @@ const DIRECTIONS = [UP, RIGHT, DOWN, LEFT];
 const CORNERS = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(p => getPos(...p));
 const DIRMAP = new Map([['N', UP], ['E', RIGHT], ['S', DOWN], ['W', LEFT]]);
 const EMPTY = '.';
-const DOOR = '-';
+const DOORH = '|';
+const DOORV = '-';
 const WALL = '#';
 const UNKNOWN = '?';
 
@@ -34,28 +36,72 @@ class Day20 extends Solution {
     part1() {
         const expression = this.parseInput();
         const map = new Map([[0, 'X']]);
-        this.createMap(map, 0, expression);
-        this.visualize(map);
+        this.createMap(map, 0, expression, true);
+        const { furthestRoom } = this.flood(map, 0);
+
+        return furthestRoom.dist;
     }
 
     part2() {
+        const targetDist = 1000;
+        const expression = this.parseInput();
+        const map = new Map([[0, 'X']]);
+        this.createMap(map, 0, expression);
+        const { dists } = this.flood(map, 0);
 
+        let targetDistCount = 0;
+        for (const dist of dists.values()) {
+            targetDistCount += dist >= targetDist;
+        }
+
+        return targetDistCount;
     }
 
-    createMap(map, pos2, expression) {
-        let pos = pos2;
+    flood(map, startingPos) {
+        const dists = new Map();
+        const queue = new Queue();
+        let furthestRoom = { pos: startingPos, dist: 0 };
+        queue.enqueue(furthestRoom);
+
+        while (!queue.isEmpty()) {
+            const { pos, dist } = queue.dequeue();
+            if (dists.has(pos)) { continue; }
+            dists.set(pos, dist);
+
+            if (dist > furthestRoom.dist) {
+                furthestRoom = { pos, dist };
+            }
+
+            for (const dir of DIRECTIONS) {
+                const nextWall = map.get(pos + dir);
+                const nextPos = pos + dir * 2;
+                if (!dists.has(nextPos) && nextWall !== WALL && nextWall !== UNKNOWN) {
+                    queue.enqueue({ pos: nextPos, dist: dist + 1 });
+                }
+            }
+        }
+
+        return { dists, furthestRoom };
+    }
+
+    createMap(map, startingPos, expression, visualize = false) {
+        let pos = startingPos;
         if (expression.type === TYPE_BRANCH) {
             for (const path of expression.paths) {
-                this.createMap(map, pos, path);
+                this.createMap(map, pos, path, visualize);
             }
         } else if (expression.type === TYPE_SEQUENCE) {
             for (const part of expression.parts) {
-                pos = this.createMap(map, pos, part);
+                pos = this.createMap(map, pos, part, visualize);
             }
         } else { // expression is string
             for (const c of [...expression]) {
                 const delta = DIRMAP.get(c);
-                map.set(pos + delta, DOOR);
+                if (delta === UP || delta === DOWN) {
+                    map.set(pos + delta, DOORV);
+                } else {
+                    map.set(pos + delta, DOORH);
+                }
                 pos += 2 * delta;
                 map.set(pos, EMPTY);
                 for (const d of CORNERS) {
@@ -65,6 +111,9 @@ class Day20 extends Solution {
                     if (!map.has(pos + d)) { map.set(pos + d, UNKNOWN); }
                 }
             }
+            if (visualize) {
+                this.visualize(map);
+            }
         }
 
         return pos;
@@ -73,10 +122,21 @@ class Day20 extends Solution {
     /** @param { Map<number, string> } map */
     visualize(map) {
         if (!this.visualizationOn) { return; }
+
+        let middle;
+        for (const pos of map.keys()) { middle = pos; }
+        middle = getPos(middle);
+
+        const size = { x: 80, y: 40 };
+        const startY = middle.y - Math.floor(size.y / 2);
+        const endY = middle.y + Math.ceil(size.y / 2);
+        const startX = middle.x - Math.floor(size.x / 2);
+        const endX = middle.x + Math.ceil(size.x / 2);
+
         const lines = [];
-        for (let y = -10; y < 20; y++) {
+        for (let y = startY; y <= endY; y++) {
             const line = [];
-            for (let x = -20; x < 10; x++) {
+            for (let x = startX; x <= endX; x++) {
                 const pos = getPos(x, y);
                 if (map.has(pos)) {
                     line.push(map.get(pos));
@@ -87,9 +147,6 @@ class Day20 extends Solution {
             lines.push(line.join(''));
         }
         this.frame(lines);
-        for (const line of lines) {
-            debug(line);
-        }
     }
 
     parseInput() {
