@@ -39,7 +39,7 @@ class Screen {
         this.term.clear();
         /** @type { ScreenBuffer } */
         this.screen = new ScreenBuffer({
-            dst: this.term, x: 1, y: 1, width: this.term.width, height: this.term.height
+            dst: this.term, x: 1, y: 1, width: this.term.width - 1, height: this.term.height
         });
         this.textBuffer = new TextBuffer({
             dst: this.screen, x: 0, y: 0
