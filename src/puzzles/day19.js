@@ -150,7 +150,7 @@ class Day19 extends Solution {
             ['bani', (r, a, b, c) => `${l[c]} = ${l[a]} & ${b}`],
 
             ['borr', (r, a, b, c) => `${l[c]} = ${l[a]} | ${l[b]}`],
-            ['bori', (r, a, b, c) => `${l[c]} = ${l[a]} & ${b}`],
+            ['bori', (r, a, b, c) => `${l[c]} = ${l[a]} | ${b}`],
 
             ['setr', (r, a, b, c) => `${l[c]} = ${l[a]}`],
             ['seti', (r, a, b, c) => `${l[c]} = ${a}`],
