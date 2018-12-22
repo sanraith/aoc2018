@@ -88,6 +88,12 @@ async function runAsync(selectedDay, parts) {
     }
 
     const elapsed = stopwatch.stop();
+    screen.term.clear();
+    screen.term.moveTo(0, 0);
+    for (const line of screen.lines) {
+        // eslint-disable-next-line no-console
+        console.log(line);
+    }
     // eslint-disable-next-line no-console
     console.log(`Done. Elapsed: ${msToTime(elapsed)}`);
 }
