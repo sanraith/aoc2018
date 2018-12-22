@@ -14,7 +14,22 @@ class Day10 extends Solution {
     }
 
     part2() {
-        return this.solve().correctTime;
+        const correctTime = this.solve().correctTime;
+
+        const startTime = correctTime - 60;
+        const stars = this.parseCoords();
+        this.progressTime(stars, startTime + 30);
+        for (let i = 0; i < correctTime - startTime; i++) {
+            const { map } = this.visualize(stars, true);
+            this.progressTime(stars, 1);
+            const frame = [`T: ${startTime + i + 30}`].concat(map.map(x => x.join('')));
+            const frameHoldCount = ((1 - Math.min(1, Math.abs(30 - i))) * 20) + 1;
+            for (let j = 0; j < frameHoldCount; j++) {
+                this.frame(frame);
+            }
+        }
+
+        return correctTime;
     }
 
     solve() {

@@ -12,13 +12,20 @@ const Screen = require('./screen');
  */
 async function animate(screen, frames) {
     if (frames.length === 0) { return; }
+    const targetLength = 5000;
+    const maxFps = 60;
+    const minFps = 30;
+
     const canvas = screen.getCanvas();
     const progress = new Progress(45);
-    const targetLength = 3000;
-    const delayMs = Math.min(targetLength / frames.length, 50);
+    const delayMs = Math.min(Math.max(targetLength / frames.length, 1), 1000 / minFps);
+    let currentDelay = 0;
     for (const [index, frame] of frames.entries()) {
+        currentDelay += delayMs;
+        if (currentDelay < 1000 / maxFps) { continue; }
         canvas.draw([progress.update(index, frames.length)].concat(frame));
         await delay(delayMs);
+        currentDelay = 0;
     }
     canvas.dispose();
 }

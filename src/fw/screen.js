@@ -56,7 +56,7 @@ class Screen {
         this.clear();
         this.textBuffer.draw({ y: this._headerTop });
         this.screen.draw();
-        this.term.moveTo(0, this._headerHeight);
+        this.term.moveTo(0, this._headerHeight + 1);
     }
 
     /** @param { string } line */
@@ -85,7 +85,7 @@ class Screen {
     }
 
     get _headerHeight() {
-        return this._headerTop < 0 ? this.maxLineCount : this.lines.length + 1;
+        return this._headerTop < 0 ? this.maxLineCount : this.lines.length;
     }
 
     getCanvas() {
