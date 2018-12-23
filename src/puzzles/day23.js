@@ -40,45 +40,45 @@ class Day23 extends Solution {
             }
         }
 
+        let maxCount = Number.NEGATIVE_INFINITY;
+        for (const [keyA, record] of dataSet.entries()) {
+            this.progress(keyA, bots.length);
+
+            const setA = record.ints;
+            let currentCount = Number.POSITIVE_INFINITY;
+            for (const keyB of setA) {
+                const setB = dataSet.get(keyB).ints;
+                const intersection = this.intersect(setA, setB);
+                currentCount = Math.min(intersection.length, currentCount);
+                if (currentCount < maxCount) { break; }
+            }
+            record.count = currentCount;
+            if (currentCount > maxCount) {
+                // debug(keyA, record.ints.size, currentCount);
+                maxCount = currentCount;
+            }
+        }
+
+        const descending = [...dataSet.entries()].sort((a, b) => b[1].count - a[1].count);
+        const maxCommonStuff = descending[0][1].count;
+        const filteredKeys = descending.filter(x => x[1].count === maxCommonStuff).map(x => x[0]);
+        // for (const key of filteredKeys) {
+        //     debug(key, dataSet.get(key).ints.size);
+        // }
+
+        const keysRadiusAscending = filteredKeys.sort((a, b) => bots[a].r - bots[b].r);
+        debug('Candidate count', keysRadiusAscending.length);
+        debug('Smallest:', keysRadiusAscending[0], bots[keysRadiusAscending[0]]);
+
+
         for (const [keyA, bot] of bots.entries()) {
             const region = this.getRegion(bot);
             for (const keyB of dataSet.get(keyA).ints) {
                 const otherRegion = this.getRegion(bots[keyB]);
                 this.mergeRegions(region, otherRegion);
             }
-
-            debug(keyA, this.getRegionSize(region), region);
+            debug(keyA, this.getRegionSize(region), dataSet.get(keyA).ints, region);
         }
-
-        // let maxCount = Number.NEGATIVE_INFINITY;
-        // for (const [keyA, record] of dataSet.entries()) {
-        //     this.progress(keyA, bots.length);
-
-        //     const setA = record.ints;
-        //     let currentCount = Number.POSITIVE_INFINITY;
-        //     for (const keyB of setA) {
-        //         const setB = dataSet.get(keyB).ints;
-        //         const intersection = this.intersect(setA, setB);
-        //         currentCount = Math.min(intersection.length, currentCount);
-        //         if (currentCount < maxCount) { break; }
-        //     }
-        //     record.count = currentCount;
-        //     if (currentCount > maxCount) {
-        //         // debug(keyA, record.ints.size, currentCount);
-        //         maxCount = currentCount;
-        //     }
-        // }
-
-        // const descending = [...dataSet.entries()].sort((a, b) => b[1].count - a[1].count);
-        // const maxCommonStuff = descending[0][1].count;
-        // const filteredKeys = descending.filter(x => x[1].count === maxCommonStuff).map(x => x[0]);
-        // // for (const key of filteredKeys) {
-        // //     debug(key, dataSet.get(key).ints.size);
-        // // }
-
-        // const keysRadiusAscending = filteredKeys.sort((a, b) => bots[a].r - bots[b].r);
-        // debug('Candidate count', keysRadiusAscending.length);
-        // debug('Smallest:', keysRadiusAscending[0], bots[keysRadiusAscending[0]]);
 
         // const smallestIdx = keysRadiusAscending[0];
         // const smallest = bots[smallestIdx];
@@ -129,6 +129,18 @@ class Day23 extends Solution {
         region.bottom = Math.min(region.bottom, otherRegion.bottom);
         region.front = Math.max(region.front, otherRegion.front);
         region.back = Math.min(region.back, otherRegion.back);
+
+        const pairs = [['left', 'right'], ['top', 'bottom'], ['front', 'back']];
+        const minLength = Math.min(...pairs.map(p => region[p[1]] - region[p[0]]));
+        for (const [a, b] of pairs) {
+            const size = region[b] - region[a];
+            if (size > minLength) {
+                const diff = Math.floor((size - minLength) / 2);
+                region[a] += diff;
+                region[b] -= diff;
+            }
+        }
+
         return region;
     }
 
