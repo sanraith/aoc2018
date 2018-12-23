@@ -9,8 +9,9 @@ const { animate } = require('./animator');
 const { getSolutionFilesAsync } = require('./paths');
 const Screen = require('./screen');
 
+const isSimple = true;
 const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
-const screen = new Screen(false);
+const screen = new Screen(isSimple);
 
 function msToTime(duration) {
     let milliseconds = parseInt((duration % 1000), 10);
@@ -88,11 +89,13 @@ async function runAsync(selectedDay, parts) {
     }
 
     const elapsed = stopwatch.stop();
-    screen.term.clear();
-    screen.term.moveTo(0, 0);
-    for (const line of screen.lines) {
-        // eslint-disable-next-line no-console
-        console.log(line);
+    if (!isSimple) {
+        screen.term.clear();
+        screen.term.moveTo(0, 0);
+        for (const line of screen.lines) {
+            // eslint-disable-next-line no-console
+            console.log(line);
+        }
     }
     // eslint-disable-next-line no-console
     console.log(`Done. Elapsed: ${msToTime(elapsed)}`);
