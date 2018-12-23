@@ -16,24 +16,12 @@ class Day23 extends Solution {
     }
 
     part2() {
+        const [p1Weight, p2Weight] = [0.8, 0.2];
         const bots = this.parseInput();
-        // const minMaxMap = new Map([...'xyz'].map(c => [c,
-        //     { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY }]));
-        // for (const bot of bots) {
-        //     for (const prop of [...'xyz']) {
-        //         const value = bot[prop];
-        //         const minMax = minMaxMap.get(prop);
-        //         minMax.min = Math.min(minMax.min, value);
-        //         minMax.max = Math.max(minMax.max, value);
-        //     }
-        // }
-        // debug(minMaxMap);
-
         /** @type { Map<number, { ints: Set<number> }> } */
         const dataSet = new Map([...Array(bots.length)].map((_, i) => [i, { ints: new Set() }]));
         for (const [i, a] of bots.entries()) {
             for (const [j, b] of bots.entries()) {
-                // if (a === b) { continue; }
                 if (this.hasIntersection(a, b)) {
                     dataSet.get(i).ints.add(j);
                 }
@@ -42,8 +30,7 @@ class Day23 extends Solution {
 
         let maxCount = Number.NEGATIVE_INFINITY;
         for (const [keyA, record] of dataSet.entries()) {
-            this.progress(keyA, bots.length);
-
+            this.progress(keyA * p1Weight, bots.length);
             const setA = record.ints;
             let currentCount = Number.POSITIVE_INFINITY;
             for (const keyB of setA) {
@@ -54,7 +41,6 @@ class Day23 extends Solution {
             }
             record.count = currentCount;
             if (currentCount > maxCount) {
-                // debug(keyA, record.ints.size, currentCount);
                 maxCount = currentCount;
             }
         }
@@ -62,63 +48,86 @@ class Day23 extends Solution {
         const descending = [...dataSet.entries()].sort((a, b) => b[1].count - a[1].count);
         const maxCommonStuff = descending[0][1].count;
         const filteredKeys = descending.filter(x => x[1].count === maxCommonStuff).map(x => x[0]);
-        // for (const key of filteredKeys) {
-        //     debug(key, dataSet.get(key).ints.size);
-        // }
-
         const keysRadiusAscending = filteredKeys.sort((a, b) => bots[a].r - bots[b].r);
-        debug('Candidate count', keysRadiusAscending.length);
-        debug('Smallest:', keysRadiusAscending[0], bots[keysRadiusAscending[0]]);
+        const smallestIdx = keysRadiusAscending[0];
+        const smallest = bots[smallestIdx];
 
-
-        for (const [keyA, bot] of bots.entries()) {
-            const region = this.getRegion(bot);
-            for (const keyB of dataSet.get(keyA).ints) {
-                const otherRegion = this.getRegion(bots[keyB]);
-                this.mergeRegions(region, otherRegion);
-            }
-            debug(keyA, this.getRegionSize(region), dataSet.get(keyA).ints, region);
+        const region = this.getRegion(smallest);
+        for (const keyB of dataSet.get(smallestIdx).ints) {
+            const otherRegion = this.getRegion(bots[keyB]);
+            this.mergeRegions(region, otherRegion);
         }
 
-        // const smallestIdx = keysRadiusAscending[0];
-        // const smallest = bots[smallestIdx];
-        // const region = this.getRegion(smallest);
-        // debug('Region before:', this.getRegionSize(region), region);
+        let maxC = 0;
+        const targets = [...dataSet.get(smallestIdx).ints];
+        const pos = { ...smallest, r: 0 };
+        while (true) {
+            let c = 0; let target;
+            const delta = Math.floor(Math.random() * targets.length);
+            for (let i = 0; i < targets.length; i++) {
+                const targetKey = (i + delta) % targets.length;
+                const botKey = targets[targetKey];
+                if (!this.hasIntersection(pos, bots[botKey])) {
+                    target = bots[botKey];
+                    break;
+                }
+                c++;
+            }
+            if (target !== undefined) {
+                this.step(pos, target);
+            }
+            if (c > maxC) {
+                this.progress(maxCommonStuff * p1Weight + maxC * p2Weight, maxCommonStuff);
+                maxC = c;
+                if (maxC === maxCommonStuff) {
+                    break;
+                }
+            }
+        }
 
-        // // Get points contributing to the target intersection
-        // let contributingIndexes;
-        // const setA = dataSet.get(smallestIdx).ints;
-        // for (const keyB of setA) {
-        //     if (contributingIndexes === undefined) { contributingIndexes = setA; }
-        //     const setB = dataSet.get(keyB).ints;
-        //     contributingIndexes = this.intersect(contributingIndexes, setB);
-        // }
-
-        // for (const contributingIndex of contributingIndexes) {
-        //     const newRegion = this.getRegion(bots[contributingIndex]);
-        //     region.left = Math.max(region.left, newRegion.left);
-        //     region.right = Math.min(region.right, newRegion.right);
-        //     region.top = Math.max(region.top, newRegion.top);
-        //     region.bottom = Math.min(region.bottom, newRegion.bottom);
-        //     region.front = Math.max(region.front, newRegion.front);
-        //     region.back = Math.min(region.back, newRegion.back);
-        // }
-        // debug('Region after:', this.getRegionSize(region), region);
-
-        // for (let x = region.left; x <= region.right; x++) {
-        //     for (let y = region.top; y <= region.bottom; y++) {
-        //         for (let z = region.front; z <= region.back; z++) {
-        //             const p = { x, y, z };
-        //             let count = 0;
-        //             for (const idx of contributingIndexes) {
-        //                 count += this.manhattan(bots[idx], p) <= bots[idx].r;
+        // TODO step towards {0,0,0} if needed...
+        // const params = [...'xyz'];
+        // const dir = {
+        //     x: (pos.x > 0 ? -1 : 1),
+        //     y: (pos.y > 0 ? -1 : 1),
+        //     z: (pos.z > 0 ? -1 : 1),
+        // };
+        // let pos2 = { ...pos };
+        // const targetBots = targets.map(t => bots[t]);
+        // let isValid = true;
+        // while (isValid) {
+        //     for (const param of params) {
+        //         isValid = true;
+        //         const nextP = { ...pos2 };
+        //         nextP[param] += dir.param;
+        //         for (const bot of targetBots) {
+        //             if (!this.hasIntersection(nextP, bot)) {
+        //                 isValid = false; break;
         //             }
-        //             debug(p, count);
+        //         }
+        //         if (isValid) {
+        //             pos2 = nextP;
+        //             break;
         //         }
         //     }
         // }
 
-        return '0';
+        return this.manhattan({ x: 0, y: 0, z: 0, r: 0 }, pos);
+    }
+
+    step(pos, target) {
+        const stepFactor = 1000000;
+        for (const p of ['x', 'y', 'z']) {
+            let delta = target[p] - pos[p];
+            const delta2 = Math.ceil(delta / stepFactor);
+            if (delta2 === 0 && delta !== 0) {
+                delta = delta < 0 ? -1 : 1;
+            } else {
+                delta = delta2;
+            }
+            // eslint-disable-next-line no-param-reassign
+            pos[p] += delta;
+        }
     }
 
     mergeRegions(regionIn, otherRegion) {
@@ -129,17 +138,6 @@ class Day23 extends Solution {
         region.bottom = Math.min(region.bottom, otherRegion.bottom);
         region.front = Math.max(region.front, otherRegion.front);
         region.back = Math.min(region.back, otherRegion.back);
-
-        const pairs = [['left', 'right'], ['top', 'bottom'], ['front', 'back']];
-        const minLength = Math.min(...pairs.map(p => region[p[1]] - region[p[0]]));
-        for (const [a, b] of pairs) {
-            const size = region[b] - region[a];
-            if (size > minLength) {
-                const diff = Math.floor((size - minLength) / 2);
-                region[a] += diff;
-                region[b] -= diff;
-            }
-        }
 
         return region;
     }
