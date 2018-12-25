@@ -9,7 +9,7 @@ const { animate } = require('./animator');
 const { getSolutionFilesAsync } = require('./paths');
 const Screen = require('./screen');
 
-const isSimple = true;
+const isSimple = false;
 const debugParams = process.env.DEBUGGER ? { execArgv: ['--inspect=0'] } : undefined;
 const screen = new Screen(isSimple);
 
