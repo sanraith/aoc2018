@@ -61,7 +61,7 @@ class Day23 extends Solution {
         let maxC = 0;
         const targets = [...dataSet.get(smallestIdx).ints];
         const pos = { ...smallest, r: 0 };
-        while (true) { // TODO fix lint error
+        while (maxC !== maxCommonStuff) {
             let c = 0; let target;
             const delta = Math.floor(Math.random() * targets.length);
             for (let i = 0; i < targets.length; i++) {
@@ -79,38 +79,8 @@ class Day23 extends Solution {
             if (c > maxC) {
                 this.progress(maxCommonStuff * p1Weight + maxC * p2Weight, maxCommonStuff);
                 maxC = c;
-                if (maxC === maxCommonStuff) {
-                    break;
-                }
             }
         }
-
-        // TODO step towards {0,0,0} if needed...
-        // const params = [...'xyz'];
-        // const dir = {
-        //     x: (pos.x > 0 ? -1 : 1),
-        //     y: (pos.y > 0 ? -1 : 1),
-        //     z: (pos.z > 0 ? -1 : 1),
-        // };
-        // let pos2 = { ...pos };
-        // const targetBots = targets.map(t => bots[t]);
-        // let isValid = true;
-        // while (isValid) {
-        //     for (const param of params) {
-        //         isValid = true;
-        //         const nextP = { ...pos2 };
-        //         nextP[param] += dir.param;
-        //         for (const bot of targetBots) {
-        //             if (!this.hasIntersection(nextP, bot)) {
-        //                 isValid = false; break;
-        //             }
-        //         }
-        //         if (isValid) {
-        //             pos2 = nextP;
-        //             break;
-        //         }
-        //     }
-        // }
 
         return this.manhattan({ x: 0, y: 0, z: 0, r: 0 }, pos);
     }
