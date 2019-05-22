@@ -1,8 +1,6 @@
 module.exports = {
     "extends": "airbnb-base",
     "rules": {
-        // windows linebreaks when not in production environment
-        "linebreak-style": ["error", process.env.NODE_ENV === 'prod' ? "unix" : "windows"],
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "max-len": ["error", 120],
         "arrow-parens": ["error", "as-needed"],
