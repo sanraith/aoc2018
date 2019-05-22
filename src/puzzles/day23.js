@@ -61,7 +61,7 @@ class Day23 extends Solution {
         let maxC = 0;
         const targets = [...dataSet.get(smallestIdx).ints];
         const pos = { ...smallest, r: 0 };
-        while (true) {
+        while (true) { // TODO fix lint error
             let c = 0; let target;
             const delta = Math.floor(Math.random() * targets.length);
             for (let i = 0; i < targets.length; i++) {
