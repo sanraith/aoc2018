@@ -25,25 +25,25 @@
     "ext": "js,txt"
   },
   "dependencies": {
-    "chalk": "^2.4.1",
+    "chalk": "^2.4.2",
     "clui": "^0.3.6",
-    "debug": "^4.1.0",
-    "delay": "^4.1.0",
+    "debug": "^4.1.1",
+    "delay": "^4.3.0",
     "fs-extra": "^7.0.1",
-    "nodemon": "^1.18.7",
-    "queue-fifo": "^0.2.5",
+    "nodemon": "^1.19.1",
+    "queue-fifo": "^0.2.6",
     "quick-primefactors": "^1.0.0",
-    "statman-stopwatch": "^2.7.0",
-    "terminal-kit": "^1.26.6",
+    "statman-stopwatch": "^2.9.0",
+    "terminal-kit": "^1.31.1",
     "victor": "^1.1.0"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
